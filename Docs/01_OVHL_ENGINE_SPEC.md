@@ -38,26 +38,27 @@ OVHL_PRINCIPLES = {
 ### 📁 REVOLUTIONARY FOLDER STRUCTURE
 ```
 OVHL_CORE/
-├── 🎯 CORE/                          ❌ ZERO TOUCH AREA
-│   ├── Kernel/                       # Bootstrapper & ServiceManager
-│   ├── Server/
-│   │   ├── Services/                 # Global services (Data, Event, Zone)
-│   │   └── Systems/                  # Core systems (Network, Migration)
-│   ├── Client/
-│   │   ├── Services/                 # UI, Input, Audio services
-│   │   └── Systems/                  # Client-side systems
-│   └── Shared/
-│       ├── Config/                   # Game configurations
-│       └── Utils/                    # Shared utilities
-├── 🧩 MODULES/                        ✅ DEVELOPER AREA
-│   ├── Server/                       # Server-side gameplay modules
-│   ├── Client/                       # Client-side UI/Controller modules
-│   └── Shared/                       # Cross-platform modules
-├── 🎮 GAMES/                          🎯 GAME PROFILES
-│   ├── OjolRoleplay/                 # Game configuration A
-│   ├── RacingGame/                   # Game configuration B
-│   └── RPGSandbox/                   # Game configuration C
-├── 🛠️ TOOLS/                          🔧 DEVELOPMENT TOOLS
+├── Source
+│   ├── 🎯 Core/                          ❌ ZERO TOUCH AREA
+│   │   ├── Kernel/                       # Bootstrapper & ServiceManager
+│   │   ├── Server/
+│   │   │   ├── Services/                 # Global services (Data, Event, Zone)
+│   │   │   └── Systems/                  # Core systems (Network, Migration)
+│   │   ├── Client/
+│   │   │   ├── Services/                 # UI, Input, Audio services
+│   │   │   └── Systems/                  # Client-side systems
+│   │   └── Shared/
+│   │       ├── Config/                   # Game configurations
+│   │       └── Utils/                    # Shared utilities
+│   ├── 🧩 Modules/                        ✅ DEVELOPER AREA
+│   │   ├── Server/                       # Server-side gameplay modules
+│   │   ├── Client/                       # Client-side UI/Controller modules
+│   │   └── Shared/                       # Cross-platform modules
+│   ├── 🎮 Games/                          🎯 GAME PROFILES
+│   │   ├── OjolRoleplay/                 # Game configuration A
+│   │   ├── RacingGame/                   # Game configuration B
+│   │   └── RPGSandbox/                   # Game configuration C
+├── 🛠️ Tools/                          🔧 DEVELOPMENT TOOLS
 │   ├── VisualEditor/                 # In-game world builder
 │   ├── AICoPilot/                    # AI development assistant
 │   └── Dashboard/                    # Real-time monitoring
@@ -69,7 +70,7 @@ OVHL_CORE/
     └── 05_PROGRESS_LOG.md           # Development tracker
 ```
 
-### 🎯 ROJO PROJECT STRUCTURE (SUCI - JANGAN DIUBAH!)
+### 🎯 ROJO PROJECT STRUCTURE (SILAHKAN AI BANTI IMPROVE DI FASE AWAL EKSEKUSI SESUAI STRUKTUR FOLDER YANG ADA)
 ```json
 {
   "name": "OVHL_CORE_ENGINE",
@@ -77,23 +78,23 @@ OVHL_CORE/
     "$className": "DataModel",
     
     "ReplicatedStorage": {
-      "OVHL_Core": {"$path": "OVHL_CORE/Core"},
-      "OVHL_Modules": {"$path": "OVHL_CORE/Modules"},
-      "OVHL_GameConfig": {"$path": "OVHL_CORE/GAMES/CurrentGame"}
+      "OVHL_Core": {"$path": "OVHL_CORE/Source/Core"},
+      "OVHL_Modules": {"$path": "OVHL_CORE/Source/Modules"},
+      "OVHL_GameConfig": {"$path": "OVHL_CORE/Source/Games/CurrentGame"}
     },
     
     "ServerScriptService": {
-      "OVHL_Bootstrap": {"$path": "OVHL_CORE/CORE/Kernel/ServerBootstrapper.lua"}
+      "OVHL_Bootstrap": {"$path": "OVHL_CORE/Core/Kernel/ServerBootstrapper.lua"}
     },
     
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "OVHL_Client": {"$path": "OVHL_CORE/CORE/Kernel/ClientBootstrapper.lua"}
+        "OVHL_Client": {"$path": "OVHL_CORE/Core/Kernel/ClientBootstrapper.lua"}
       }
     },
     
     "ServerStorage": {
-      "OVHL_Tools": {"$path": "OVHL_CORE/TOOLS"}
+      "OVHL_Tools": {"$path": "OVHL_CORE/Tools/"}
     }
   }
 }
