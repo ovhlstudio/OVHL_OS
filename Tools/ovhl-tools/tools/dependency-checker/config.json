@@ -1,0 +1,5 @@
+{
+  "slug": "dependency-checker",
+  "name": "🔗 Pengecek Dependensi",
+  "description": "Menganalisis dependensi antar modul (mencari yang hilang/putar)"
+}
