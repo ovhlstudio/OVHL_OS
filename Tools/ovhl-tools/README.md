@@ -36,10 +36,11 @@ ovhl
 
 Ini bagian terbaiknya. Untuk menambah tool baru:
 
-1.  Buat folder baru di dalam `Tools/ovhl-tools/tools/`. 
+1.  Buat folder baru di dalam `Tools/ovhl-tools/tools/`.
     Contoh: `Tools/ovhl-tools/tools/context-generator`
 
 2.  Buat file `config.json` di dalam folder tool baru itu:
+
     ```json
     {
       "name": "Generator Konteks",
@@ -50,13 +51,14 @@ Ini bagian terbaiknya. Untuk menambah tool baru:
     }
     ```
 
-3.  Buat file `index.js` di dalam folder tool baru itu dan *export* fungsi yang namanya sama dengan `main` di config:
+3.  Buat file `index.js` di dalam folder tool baru itu dan _export_ fungsi yang namanya sama dengan `main` di config:
+
     ```javascript
-    import { logger } from '../../core/logger.js';
+    import { logger } from "../../core/logger.js";
 
     // Nama fungsi ini ('run') harus sama dengan "main" di config.json
     export async function run() {
-      logger.info('Tool Generator Konteks jalan!');
+      logger.info("Tool Generator Konteks jalan!");
       // ...tambahkan logikamu di sini...
     }
     ```
@@ -70,9 +72,10 @@ Semua ekspor dari tool (seperti laporan audit) akan disimpan di:
 `Tools/Exports/YYYY-MM-DD/`
 
 ## 🗂️ Struktur Proyek (Baru)
+
 ```
-OVHL_OS/
-├── Source/
+./
+├── src/
 ├── Tools/
 │   ├── Exports/
 │   ├── ovhl-tools/  <-- INI FOLDER TOOL UTAMA
@@ -98,4 +101,5 @@ OVHL_OS/
 ```
 
 ## 📝 License
+
 MIT © Hanif Saifudin
