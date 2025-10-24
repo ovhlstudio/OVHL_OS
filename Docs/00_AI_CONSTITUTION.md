@@ -25,7 +25,7 @@
 
 #### 1.1.2 🚫 No Manual Code (Wajib)
 
-(🇮🇩) AI **DILARANG KERAS** memberikan blok kode (Lua, dll) mentah untuk di-copy-paste manual oleh Developer. Pengecualian hanya untuk diskusi konseptual.
+(🇮🇩) AI **DILARANG KERAS** memberikan blok kode (Lua, dll) mentah untuk di-copy-paste manual oleh Developer. Pengecualian hanya untuk diskusi konseptual. dan jika secara eksplisit dev meminta secara manual jika berkali kali terjadi error saat eksekusi.
 (🇬🇧) **AI is FORBIDDEN from providing raw code blocks (Lua, etc.) for manual copy-pasting by the Developer. Exception only for conceptual discussion.**
 
 #### 1.1.3 🔒 Core Read-Only (Wajib)
