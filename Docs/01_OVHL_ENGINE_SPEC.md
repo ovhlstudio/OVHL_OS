@@ -39,43 +39,41 @@ OVHL_PRINCIPLES = {
 
 ```text
 📁 ./                                 # root project
-├── 📁 src/
-│   ├── 📁 core/
-│   │   ├── 📁 kernel/
-│   │   │   ├── ServerBootstrap.lua
-│   │   │   ├── ClientBootstrap.lua
-│   │   │   ├── ModuleLoader.lua
-│   │   │   └── ServiceManager.lua
-│   │   │
-│   │   ├── 📁 services/
-│   │   │   ├── 📁 server/
-│   │   │   │   ├── DataService.lua
-│   │   │   │   └── ReplicationService.lua
-│   │   │   ├── 📁 client/
-│   │   │   │   ├── UIService.lua
-│   │   │   │   └── InputService.lua
-│   │   │   └── 📁 shared/
-│   │   │       └── EventService.lua
-│   │   │
-│   │   └── 📁 utils/
-│   │       └── Logger.lua
+├── 📁 Source/
+│   ├── 📁 Client/
+│   │   └── 📄 Init.client.lua         # Entrypoint Client
 │   │
-│   ├── 📁 modules/                   # Gameplay Modules (Flat & Lowercase)
-│   │   ├── 📁 teleportsystem/
-│   │   │   ├── manifest.lua
-│   │   │   ├── TeleportSystemHandler.lua
-│   │   │   └── TeleportSystemConfig.lua
-│   │   │
-│   │   └── 📁 leaderboard/
-│   │       ├── manifest.lua
-│   │       └── LeaderboardHandler.lua
+│   ├── 📁 Server/
+│   │   └── 📄 Init.server.lua         # Entrypoint Server
 │   │
-│   └── 📁 games/                     # Game Profiles
-│       ├── 📁 _prototype/
-│       │   └── game.config.lua
-│       └── 📁 ojol-roleplay/
-│           ├── game.config.lua
-│           └── 📁 assets/
+│   ├── 📁 Core/                      # Core OS (di ReplicatedStorage)
+│   │   ├── 📁 Client/
+│   │   │   ├── 📁 Kernel/
+│   │   │   │   └── ClientBootstrapper.lua
+│   │   │   └── 📁 Services/
+│   │   │       ├── UIService.lua
+│   │   │       └── InputService.lua
+│   │   │
+│   │   ├── 📁 Server/
+│   │   │   ├── 📁 Kernel/
+│   │   │   │   ├── ServerBootstrapper.lua
+│   │   │   │   └── ModuleLoader.lua
+│   │   │   └── 📁 Services/
+│   │   │       ├── ServiceManager.lua
+│   │   │       ├── EventService.lua
+│   │   │       ├── DataService.lua
+│   │   │       └── ReplicationService.lua
+│   │   │
+│   │   └── 📁 Shared/
+│   │       └── 📁 Utils/
+│   │           └── Logger.lua
+│   │
+│   ├── 📁 Modules/                   # Gameplay Modules
+│   │   ├── 📁 simplehud/
+│   │   ...
+│   └── 📁 Replicated/                # Aset Game Profile
+│       ├── 📁 assets/
+│       ...
 │
 ├── 📁 Tools/                         # Developer Tools
 │   └── 📁 ovhl-tools/
@@ -94,7 +92,33 @@ OVHL_PRINCIPLES = {
 
 ```json
 {
-  TBD
+  "name": "OVHL_OJOL_CLONE",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Core": {
+        "$path": "Source/Core"
+      },
+      "Modules": {
+        "$path": "Source/Modules"
+      },
+      "Replicated": {
+        "$path": "Source/Replicated"
+      }
+    },
+    "ServerScriptService": {
+      "Init": {
+        "$path": "Source/Server/Init.server.lua"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Init": {
+          "$path": "Source/Client/Init.client.lua"
+        }
+      }
+    }
+  }
 }
 ```
 

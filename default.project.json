@@ -1,43 +1,25 @@
 {
-  "name": "OVHL_OS_ENGINE",
+  "name": "OVHL_OS_V16_SECURE_CLEANEST_FIXED",
   "tree": {
     "$className": "DataModel",
+
     "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
-      "OVHL_Core": {
-        "$path": "Source/Core/Shared"
-      },
-      "OVHL_Modules": {
-        "$path": "Source/Modules/Shared"
-      },
-      "OVHL_GameConfig": {
-        "$path": "Source/Games/_prototype"
-      }
+      "$path": "src/replicated"
+    },
+    "ServerStorage": {
+      "$path": "src/serverstorage"
     },
     "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "OVHL_Core_Server": {
-        "$path": "Source/Core/Server"
-      },
-      "OVHL_Modules_Server": {
-        "$path": "Source/Modules/Server"
-      },
-      "OVHL_Bootstrap": {
-        "$path": "Source/Core/Kernel/ServerBootstrapper.lua"
+      "init": {
+        "$path": "src/server/init.server.lua",
+        "$className": "Script"
       }
     },
     "StarterPlayer": {
-      "$className": "StarterPlayer",
       "StarterPlayerScripts": {
-        "$className": "StarterPlayerScripts",
-        "OVHL_Core_Client": {
-          "$path": "Source/Core/Client"
-        },
-        "OVHL_Modules_Client": {
-          "$path": "Source/Modules/Client"
-        },
-        "OVHL_Client": {
-          "$path": "Source/Core/Kernel/ClientBootstrapper.lua"
+        "init": {
+          "$path": "src/client/init.client.lua",
+          "$className": "LocalScript"
         }
       }
     }

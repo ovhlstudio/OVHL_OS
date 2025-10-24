@@ -17,11 +17,11 @@ export class ProjectScanner {
       depth = 10, 
       extensions = ['lua', 'json', 'md'],
       // --- MODIFIKASI: Terima 'scanScope' ---
-      scanScope = 'source' 
+      scanScope = 'src' 
     } = options;
     
     // --- MODIFIKASI: Tentukan baseDir & ignorePaths ---
-    const baseDir = scanScope === 'root' ? '.' : 'Source';
+    const baseDir = scanScope === 'root' ? '.' : 'src';
     const cwd = path.join(this.projectRoot, baseDir);
 
     // --- FIX: Baris yang hilang ditambahkan di sini ---
@@ -81,8 +81,8 @@ export class ProjectScanner {
 
   async scanModules(type = 'client') {
     const basePath = type === 'client' 
-      ? 'Source/Modules/Client'
-      : 'Source/Modules/Server';
+      ? 'src/Modules/Client'
+      : 'src/Modules/Server';
     
     const modulesDir = path.join(this.projectRoot, basePath);
 
@@ -163,8 +163,8 @@ export class ProjectScanner {
 
   async scanServices(type = 'client') {
     const basePath = type === 'client'
-      ? 'Source/Core/Client/Services'
-      : 'Source/Core/Server/Services';
+      ? 'src/Core/Client/Services'
+      : 'src/Core/Server/Services';
     
     const servicesDir = path.join(this.projectRoot, basePath);
 

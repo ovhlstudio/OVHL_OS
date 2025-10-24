@@ -104,10 +104,10 @@
 
 ### 3.2 🗺️ Referensi Struktur Proyek (V9 - WAJIB HAFAL AI)
 
-- (🇮🇩) AI wajib menggunakan _path relatif `lowercase`_ ini. Struktur lama (`Source/`, `Modules/Server/`) **USANG**.
-- (🇬🇧) **AI must use these `lowercase` paths. Old structures (`Source/`) are OBSOLETE.**
+- (🇮🇩) AI wajib menggunakan _path relatif `PascalCase` (`Source/`)_ ini sesuai standar `OVHL_OJOL` yang terbukti work. Struktur `src/lowercase` **USANG**.
+- (🇬🇧) **AI must use these `PascalCase` (`Source/`) paths following the proven `OVHL_OJOL` standard. `src/lowercase` structures are OBSOLETE.**
 
-```bash
+```text
 📁 ./                       <-- ROOT PROJECT (e.g., OVHL_OS/)
 ├── 📁 .git/
 ├── 📄 .gitignore
@@ -117,12 +117,17 @@
 │   ├── 📄 02_OVHL_MODULE_ARCHITECTURE.md
 │   ├── 📄 03_OVHL_BUILDER_GUIDE.md
 │   └── 📄 04_DEV_LOGS.md
-├── 📁 src/                     ✅ READ/WRITE (Kode Game)
-│   ├── 📁 core/                ⚠️ KONSETEKSTUAL (Ref: 1.1.3)
-│   ├── 📁 modules/             ✅ READ/WRITE AI (Flat & lowercase)
-│   │   ├── 📁 leaderboard/
-│   │   └── 📁 teleportsystem/
-│   └── 📁 games/               ✅ READ/WRITE AI
+├── 📁 Source/                  ✅ READ/WRITE (Kode Game)
+│   ├── 📁 Client/              (Entrypoint Client)
+│   │   └── 📄 Init.client.lua
+│   ├── 📁 Server/              (Entrypoint Server)
+│   │   └── 📄 Init.server.lua
+│   ├── 📁 Core/                ⚠️ KONSETEKSTUAL (Ref: 1.1.3)
+│   │   ├── 📁 Client/
+│   │   ├── 📁 Server/
+│   │   └── 📁 Shared/
+│   ├── 📁 Modules/             ✅ READ/WRITE AI
+│   └── 📁 Replicated/          ✅ READ/WRITE AI
 ├── 📁 Tools/                   ✅ READ/WRITE (Tools AI & Dev)
 │   ├── 📁 Exports/
 │   ├── 📁 ovhl-tools/          (Perpustakaan "Tukang")
