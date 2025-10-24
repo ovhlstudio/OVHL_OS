@@ -1,1 +1,0 @@
-return { showMiniMap = true }

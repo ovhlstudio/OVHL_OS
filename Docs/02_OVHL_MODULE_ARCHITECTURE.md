@@ -2,7 +2,7 @@
 
 > 🏛️ **Project:** Omniverse Highland - Multi-Game Engine
 > 📄 **Dokumen:** Standar Arsitektur & Development Modul
-> 🏷️ **Versi:** 2.0.0 (Refactored w/ Anti-Crash)
+> 🏷️ **Versi:** 2.1.0 (Final w/ Anti-Crash & Corrected Refs)
 > 👑 **Founder:** Hanif Saifudin
 > 🟢 **Status:** AKTIF (Sesuai Konstitusi `00`)
 
@@ -32,9 +32,9 @@ OVHL_MODULE_PRINCIPLES = {
 
 | Tipe              | Tujuan                   | Lokasi (Ref: `00_CONST 3.2`) | Contoh                         |
 | :---------------- | :----------------------- | :--------------------------- | :----------------------------- |
-| **Server Module** | Logika game, data        | `Modules/Server/`            | `ShopSystem`, `QuestManager`   |
-| **Client Module** | UI, kontrol, visual      | `Modules/Client/`            | `MainHUD`, `VehicleController` |
-| **Shared Module** | Utilitas lintas platform | `Modules/Shared/`            | `MathUtils`, `GameConstants`   |
+| **Server Module** | Logika game, data        | `Source/Modules/Server/`     | `ShopSystem`, `QuestManager`   |
+| **Client Module** | UI, kontrol, visual      | `Source/Modules/Client/`     | `MainHUD`, `VehicleController` |
+| **Shared Module** | Utilitas lintas platform | `Source/Modules/Shared/`     | `MathUtils`, `GameConstants`   |
 
 ---
 
@@ -43,7 +43,7 @@ OVHL_MODULE_PRINCIPLES = {
 ### 2.1 📦 Template Modul Standar
 
 ```bash
-📁 OVHL_CORE/Source/Modules/
+📁 ./Source/Modules/
 └── 📁 [ModuleType]/ (Server, Client, Shared)
     └── 📁 [ModuleName]/ (PascalCase)
         ├── 📄 manifest.lua            -- WAJIB: Metadata modul
@@ -63,7 +63,7 @@ OVHL_MODULE_PRINCIPLES = {
 
 ```lua
 -- ============================================
--- OVHL RBLX Framework v2.0.0
+-- OVHL RBLX Framework v2.1.0
 -- Studio: Omniverse Highland Studio
 -- Founder: Hanif Saifudin
 -- Module: [ModuleName]
@@ -78,9 +78,9 @@ return {
 
     -- === 2. DEPENDENSI ===
     depends = {                       -- Modul lain yang dibutuhkan
-        "DataService",                -- Core services
+        "DataService",                -- Core services (Nama Service di Source/Core/)
         "EventService",
-        -- "OtherModule"              -- Modul gameplay lain
+        -- "OtherModule"              -- Modul gameplay lain (Nama Modul di Source/Modules/)
     },
 
     -- === 3. KONFIGURASI LOADING ===
@@ -101,7 +101,7 @@ return {
         "inventory_updated",
     },
 
-    -- === 6. SKEMA KONFIGURASI (Untuk validasi) ===
+    -- === 6. SKEMA KONFIGURASI (Untuk validasi di Config Manager) ===
     configSchema = {
         enabled = "boolean",
         maxItems = "number",
@@ -117,7 +117,7 @@ return {
 
 ```lua
 -- ============================================
--- OVHL RBLX Framework v2.0.0
+-- OVHL RBLX Framework v2.1.0
 -- Founder: Hanif Saifudin
 -- Module: [ModuleName] Handler
 -- Purpose: Logika inti untuk [ModuleName]
@@ -147,25 +147,26 @@ local [ModuleName]Handler = {}
 -- Private variables (snake_case)
 local _isInitialized = false
 local _moduleConfig = nil
-local _context = nil -- Menyimpan dependencies
+local _context = nil -- Menyimpan dependencies (termasuk Core Services dari OS)
 
--- === METODE PUBLIK (Siklus Hidup) ===
+-- === METODE PUBLIK (Siklus Hidup Modul) ===
 
+-- Dipanggil oleh SmartBootstrapper setelah semua dependensi ter-load
 function [ModuleName]Handler:init(context)
     if _isInitialized then
         warn("[ModuleName] sudah diinisialisasi!")
         return
     end
 
-    -- Simpan dependencies
+    -- Simpan dependencies (Core Services, Config, dll)
     _context = context
-    self.DataService = context.DataService
-    self.EventService = context.EventService
+    self.DataService = context.DataService -- Disuntik oleh OS
+    self.EventService = context.EventService -- Disuntik oleh OS
 
-    -- Load konfigurasi
+    -- Load konfigurasi modul
     _moduleConfig = self:_loadConfiguration()
 
-    -- Inisialisasi sistem internal
+    -- Inisialisasi sistem internal modul
     self:_setupEventListeners()
     self:_initializeSystems()
 
@@ -173,19 +174,23 @@ function [ModuleName]Handler:init(context)
     print("[ModuleName] berhasil diinisialisasi!")
 end
 
+-- Dipanggil oleh SmartBootstrapper jika autoInit = true
 function [ModuleName]Handler:start()
     if not _isInitialized then
         error("[ModuleName] harus di-init() sebelum di-start()!")
     end
 
-    -- Mulai sistem aktif
+    -- Mulai proses aktif modul (loop, listener, dll)
     self:_startBackgroundProcesses()
 
     print("[ModuleName] is now running!")
 end
 
+-- Dipanggil saat shutdown atau hot-reload
 function [ModuleName]Handler:stop()
-    -- Cleanup resources
+    if not _isInitialized then return end -- Sudah berhenti
+
+    -- Hentikan semua proses aktif & cleanup resources
     self:_cleanupEventListeners()
     self:_stopBackgroundProcesses()
 
@@ -193,28 +198,36 @@ function [ModuleName]Handler:stop()
     print("[ModuleName] telah dihentikan.")
 end
 
--- === METODE PRIVATE (Internal - prefix _) ===
+-- === METODE PRIVATE (Logika Internal Modul - prefix _) ===
 
 function [ModuleName]Handler:_loadConfiguration()
-    -- Load dari DataService atau fallback ke file Config lokal
+    -- Prioritas: DataService (jika ada) > File Config Lokal
     local config = self.DataService:GetModuleConfig("[ModuleName]")
 
     if not config then
         warn("[ModuleName] Config tidak ditemukan di DataService, load fallback dari file Config.")
-        -- Perlu path yang benar, mungkin perlu di-inject oleh bootstrapper
-        -- Untuk sekarang, kita asumsikan bootstrapper sudah menaruh config di context
-        config = _context.Config or {}
+        -- Bootstrapper akan inject path ke file config lokal
+        config = require(_context.ConfigPath) or {}
     end
 
-    -- Terapkan defaults (contoh)
-    return {
-        enabled = config.enabled or true,
-        maxItems = config.maxItems or 100,
-    }
+    -- Validasi config terhadap schema (opsional tapi bagus)
+    -- local isValid, errMsg = self:_validateConfig(config)
+    -- if not isValid then warn("Config [ModuleName] tidak valid:", errMsg) end
+
+    -- Terapkan defaults jika ada nilai yang hilang (contoh)
+    local defaults = require(script.Parent:FindFirstChild("[ModuleName]Config")) -- Ambil default dari file
+    for key, value in pairs(defaults) do
+        if config[key] == nil then
+            config[key] = value
+        end
+    end
+    -- Bisa juga validasi tipe data di sini
+
+    return config
 end
 
 function [ModuleName]Handler:_setupEventListeners()
-    -- Berlangganan ke event
+    -- Berlangganan ke event global dari EventService
     self.EventService:Subscribe("player_joined", function(player)
         self:_onPlayerJoined(player)
     end)
@@ -225,29 +238,41 @@ function [ModuleName]Handler:_setupEventListeners()
 end
 
 function [ModuleName]Handler:_initializeSystems()
-    -- Inisialisasi sistem internal (jika ada)
+    -- Inisialisasi state atau sub-komponen internal modul (jika ada)
     self._internalState = {
         activePlayers = {},
         systemReady = true
     }
+    print("[ModuleName] Sistem internal diinisialisasi.")
 end
 
 function [ModuleName]Handler:_startBackgroundProcesses()
-    -- (Contoh: loop update, dll)
+    -- Contoh: Mulai loop update per detik, dll.
+    print("[ModuleName] Proses background dimulai.")
 end
 
 function [ModuleName]Handler:_cleanupEventListeners()
-    -- (PENTING: Unsubscribe semua event untuk cegah memory leak)
-    self.EventService:UnsubscribeAll(self) -- (Asumsi EventService punya fitur ini)
+    -- PENTING: Unsubscribe semua listener untuk mencegah memory leak saat stop/reload!
+    self.EventService:UnsubscribeAll(self) -- Asumsi EventService punya fitur ini
+    print("[ModuleName] Event listeners di-cleanup.")
+end
+
+function [ModuleName]Handler:_stopBackgroundProcesses()
+    -- Hentikan semua loop/proses background
+    print("[ModuleName] Proses background dihentikan.")
 end
 
 -- === CONTOH EVENT HANDLER ===
 
 function [ModuleName]Handler:_onPlayerJoined(player)
-    -- Handle player join
-    print("[ModuleName] Player joined:", player.Name)
+    -- Handle event player join
+    if not _isInitialized or not _moduleConfig.enabled then return end -- Cek modul aktif
+    print("[ModuleName] Event Player joined:", player.Name)
 
-    -- Siarkan event modul
+    -- Contoh: Menambahkan player ke state internal
+    self._internalState.activePlayers[player.UserId] = player
+
+    -- Contoh: Menyiarkan event SPESIFIK modul ini
     self.EventService:Publish("[module_name]_player_ready", {
         player = player,
         timestamp = os.time()
@@ -255,8 +280,16 @@ function [ModuleName]Handler:_onPlayerJoined(player)
 end
 
 function [ModuleName]Handler:_onPlayerDataLoaded(playerData)
-    -- Handle data load
+    -- Handle event data player sudah siap
+    if not _isInitialized or not _moduleConfig.enabled then return end
+    print("[ModuleName] Event Player data loaded:", playerData.UserId)
 end
+
+-- === CONTOH FUNGSI PUBLIK MODUL (jika perlu dipanggil modul lain - JARANG!) ===
+-- function [ModuleName]Handler:DoSomethingPublic(arg1, arg2)
+--   if not _isInitialized then return end
+--   -- Sebaiknya hindari ini, gunakan event
+-- end
 
 return [ModuleName]Handler
 ```
@@ -268,9 +301,9 @@ return [ModuleName]Handler
 
 ```lua
 -- ============================================
--- OVHL RBLX Framework v2.0.0
+-- OVHL RBLX Framework v2.1.0
 -- Founder: Hanif Saifudin
--- Module: [ModuleName] Configuration
+-- Module: [ModuleName] Configuration (Defaults)
 -- ============================================
 
 return {
@@ -290,6 +323,7 @@ return {
         itemPrices = {
             sword = 100,
             potion = 50,
+            shield = 150
         },
         sellMultiplier = 0.7, -- 70% harga beli
     },
@@ -340,7 +374,7 @@ return {
 ```lua
 -- ✅ BENAR
 local playerHealth = 100               -- camelCase (variabel lokal)
-local MAX_INVENTORY_SIZE = 50          -- UPPER_SNAKE_CASE (konstanta)
+local MAX_INVENTORY_SIZE = 50          -- UPPER_SNAKE_CASE (konstanta modul)
 
 function Module:calculateTotalPrice() end -- camelCase (metode publik)
 function Module:_privateHelper() end    -- _camelCase (metode private)
@@ -373,9 +407,11 @@ end
 
 -- ❌ SALAH: Panggilan langsung (Direct call)
 function ShopHandler:playerBuyItem(player, itemId)
-    -- JANGAN LAKUKAN INI! (Coupling ketat)
-    local InventorySystem = require(CORE_OS_PATH.Modules.InventorySystem.Handler)
-    InventorySystem:addItem(player, itemId)
+    -- JANGAN LAKUKAN INI! (Coupling ketat & rawan error jika InventorySystem belum load)
+    local InventoryHandler = _context.InventorySystem -- Mengambil dari context (LEBIH BAIK, tapi tetap direct call)
+    if InventoryHandler then
+        InventoryHandler:AddItem(player, itemId) -- Masih direct call
+    end
 end
 ```
 
@@ -399,7 +435,7 @@ end
 
 -- ❌ SALAH: Hardcoded
 function ShopHandler:getItemPrice(itemId)
-    -- JANGAN LAKUKAN INI! (Susah di-balance)
+    -- JANGAN LAKUKAN INI! (Susah di-balance & diubah)
     if itemId == "sword" then return 100 end
     if itemId == "potion" then return 50 end
 end
@@ -413,28 +449,36 @@ end
 ```lua
 -- ✅ BENAR: Penanganan error komprehensif
 function ShopHandler:processTransaction(player, itemId, quantity)
-    -- 1. Validasi Input
-    if not self:_isValidPlayer(player) then
-        error("Player tidak valid di processTransaction")
-    end
-    if not self:_isValidItem(itemId) then
-        warn("Attempted to purchase invalid item:", itemId)
-        return false, "Invalid item"
+    -- 1. Validasi Input Awal
+    if not player or not itemId or not quantity or quantity <= 0 then
+        warn("[ShopHandler] Input tidak valid untuk processTransaction")
+        return false, "Input tidak valid"
     end
 
-    -- 2. Eksekusi Aman (Anti-Crash)
+    -- 2. Validasi Gameplay (contoh)
+    if not self:_isValidPlayer(player) then
+        error("[ShopHandler] Player tidak valid di processTransaction") -- Error jika fatal
+    end
+    if not self:_isValidItem(itemId) then
+        warn("[ShopHandler] Attempted to purchase invalid item:", itemId)
+        return false, "Item tidak valid" -- Return false jika tidak fatal
+    end
+
+    -- 3. Eksekusi Aman (Anti-Crash) untuk operasi berisiko (misal: interaksi DataService)
     local success, result = pcall(function()
+        -- Misal: Mengurangi uang player, menambah item
         return self:_executeTransaction(player, itemId, quantity)
     end)
 
     if not success then
         -- Laporkan error tapi JANGAN crash
+        warn("[ShopHandler] Gagal eksekusi transaksi:", result) -- Log error detail
         self.EventService:Publish("transaction_failed", {
             player = player,
             itemId = itemId,
-            error = result -- 'result' berisi pesan error
+            error = "Terjadi kesalahan internal" -- Pesan error aman untuk client
         })
-        return false, result
+        return false, "Terjadi kesalahan internal"
     end
 
     return true, result
@@ -449,64 +493,81 @@ end
 
 ```
 1. 🕐 BOOTSTRAP DISCOVERY (Ref: 01_SPEC 3.1)
-    ├── Scan folder `Modules/`
+    ├── Scan folder `Source/Modules/`
     ├── Baca `manifest.lua`
     ├── Validasi dependensi (Ref: 2.2.1)
     └── Sortir berdasarkan `loadOrder` (Ref: 2.2.1)
 
 2. 🚀 INITIALIZATION PHASE (init())
     ├── Buat instance modul
-    ├── Suntik dependensi (Core Services, Config, Modul lain)
+    ├── Suntik dependensi (Core Services, ConfigPath, Modul lain yang sudah init) ke `context`
     └── Panggil `module:init(context)`
 
 3. 🎯 STARTUP PHASE (start())
     ├── Panggil `module:start()` (hanya untuk `autoInit = true`)
-    └── Siarkan event "module_ready"
+    └── Siarkan event "[ModuleName]_ready"
 
 4. ⚙️ RUNTIME PHASE
-    ├── Tangani event
+    ├── Tangani event global & modul
     └── Proses background tasks
 
 5. 🛑 SHUTDOWN PHASE (stop())
     ├── Panggil `module:stop()`
-    ├── Cleanup resources (unsubscribe events, dll)
-    └── Simpan state (jika perlu)
+    ├── Cleanup resources (unsubscribe events, hentikan loops)
+    └── Simpan state (jika perlu, via DataService)
 ```
 
 ### 4.2 🔥 Kompatibilitas Hot-Reload (Ref: `01_SPEC 3.2`)
 
-(🇮🇩) Modul WAJIB didesain untuk mendukung hot-reload.
-(🇬🇧) **Modules MUST be designed to support hot-reloading.**
+(🇮🇩) Modul WAJIB didesain untuk mendukung hot-reload dengan state preservation.
+(🇬🇧) **Modules MUST be designed to support hot-reloading with state preservation.**
 
 ```lua
--- (Akan diimplementasi oleh OS, modul hanya perlu patuh)
+-- Akan dipanggil oleh HotReloadEngine (OS) saat update terdeteksi
 function ShopHandler:hotReload(newHandlerCode)
-    -- 1. Backup state saat ini
+    print("[ShopHandler] Memulai proses Hot-Reload...")
+    -- 1. Backup state krusial saat ini
     local currentState = self:_exportState()
 
-    -- 2. Hentikan operasi saat ini
+    -- 2. Hentikan operasi saat ini (cleanup)
     self:stop()
 
-    -- 3. Update kode (dilakukan oleh OS)
-    -- ... (self diganti dengan newHandlerCode) ...
+    -- 3. OS akan menimpa kode 'self' dengan 'newHandlerCode' (magic!)
+    -- Anggap saja setelah ini, 'self' adalah instance baru dengan state lama kosong
 
-    -- 4. Restore state dan restart
+    -- 4. Restore state krusial ke instance baru
     self:_importState(currentState)
-    self:start()
 
-    print("[ShopHandler] Hot-reload selesai!")
+    -- 5. Jalankan kembali init() dan start() dengan context yang sama
+    self:init(_context) -- Gunakan context yang disimpan
+    if _moduleConfig.autoInit then -- Cek dari config baru
+       self:start()
+    end
+
+    print("[ShopHandler] Hot-Reload selesai!")
 end
 
+-- Wajib ada jika modul punya state yang perlu diselamatkan
 function ShopHandler:_exportState()
-    -- (Mengembalikan data krusial yang harus diselamatkan)
+    print("[ShopHandler] Mengekspor state...")
     return {
-        activePlayers = self._internalState.activePlayers
+        -- Simpan hanya data yang TIDAK bisa direkonstruksi dari DataService
+        internalState = self._internalState
+        -- Jangan simpan _context, _moduleConfig (akan di-load ulang)
     }
 end
 
-function ShopHandler:_importState(currentState)
-    -- (Memuat kembali data krusial)
-    self._internalState.activePlayers = currentState.activePlayers
+-- Wajib ada jika _exportState ada
+function ShopHandler:_importState(savedState)
+    print("[ShopHandler] Mengimpor state...")
+    if savedState and savedState.internalState then
+        self._internalState = savedState.internalState
+        print("[ShopHandler] State internal berhasil direstore.")
+    else
+        warn("[ShopHandler] Gagal mengimpor state atau state kosong.")
+        -- Inisialisasi state default jika perlu
+        self:_initializeSystems()
+    end
 end
 ```
 
@@ -520,60 +581,117 @@ end
 (🇬🇧) **Each module must have a `[ModuleName]Tests.lua` file.**
 
 ```lua
--- [ModuleName]Tests.lua
+-- Source/Modules/[ModuleType]/[ModuleName]/[ModuleName]Tests.lua
+
+-- Lakukan OS Check juga di file Test!
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CORE_OS_PATH = ReplicatedStorage:WaitForChild("OVHL_Core", 5)
+if not CORE_OS_PATH then
+    warn("!! [TESTS] GAGAL LOAD CORE OS untuk Tes [ModuleName]")
+    return nil
+end
+
 local [ModuleName]Tests = {}
-local TestFramework = require(CORE_OS_PATH.Tools.TestFramework) -- (Contoh)
+-- Framework test runner (contoh, perlu dibuat)
+local TestRunner = require(CORE_OS_PATH.Parent.Tools.Node.utils.TestRunner) -- Contoh path
 
-function [ModuleName]Tests:runAllTests()
-    print("🧪 Menjalankan Tes [ModuleName]...")
+-- Handler yang akan di-test
+local Handler = require(script.Parent:FindFirstChild("[ModuleName]Handler"))
 
-    TestFramework:Run("Inisialisasi", function()
-        self:testInitialization()
+-- Mock Dependencies (PENTING!)
+local MockDataService = {
+    GetModuleConfig = function(moduleName) return {} end, -- Return config kosong/mock
+    GetPlayerData = function(player) return { cash = 1000 } end,
+    SavePlayerData = function(player, data) end
+}
+local MockEventService = {
+    _listeners = {},
+    Subscribe = function(self, eventName, callback)
+        if not self._listeners[eventName] then self._listeners[eventName] = {} end
+        table.insert(self._listeners[eventName], callback)
+    end,
+    Publish = function(self, eventName, ...)
+        if self._listeners[eventName] then
+            for _, callback in ipairs(self._listeners[eventName]) do
+                task.spawn(callback, ...) -- Spawn agar tidak block
+            end
+        end
+    end,
+    UnsubscribeAll = function() end -- Mock
+}
+
+-- Setup context untuk init()
+local mockContext = {
+    DataService = MockDataService,
+    EventService = MockEventService,
+    ConfigPath = script.Parent:FindFirstChild("[ModuleName]Config") -- Path ke file config default
+}
+
+TestRunner:Describe("[ModuleName] Tests", function()
+
+    local handlerInstance
+
+    TestRunner:BeforeEach(function()
+        -- Buat instance baru untuk setiap test case
+        handlerInstance = setmetatable({}, Handler)
+        -- Reset mock state jika perlu
+        MockEventService._listeners = {}
     end)
 
-    TestFramework:Run("Logika Bisnis", function()
-        self:testBusinessLogic()
+    TestRunner:It("should initialize without errors", function()
+        local success, err = pcall(handlerInstance.init, handlerInstance, mockContext)
+        TestRunner:Expect(success).ToBe(true)
+        -- TestRunner:Expect(handlerInstance._isInitialized).ToBe(true) -- Cek state internal
     end)
 
-    TestFramework:Run("Kondisi Error", function()
-        self:testErrorConditions()
+    TestRunner:It("should handle player joined event", function()
+        handlerInstance:init(mockContext)
+        local mockPlayer = { Name = "Tester", UserId = 123 }
+
+        -- Buat Spy untuk mengecek apakah event dipublish
+        local published = false
+        MockEventService:Subscribe("[module_name]_player_ready", function(data)
+            published = true
+            TestRunner:Expect(data.player).ToBe(mockPlayer)
+        end)
+
+        -- Trigger event internal
+        handlerInstance:_onPlayerJoined(mockPlayer)
+
+        -- Tunggu sebentar karena publish pakai task.spawn
+        task.wait(0.1)
+
+        TestRunner:Expect(published).ToBe(true)
+        -- Cek state internal jika perlu
+        -- TestRunner:Expect(handlerInstance._internalState.activePlayers[123]).ToBe(mockPlayer)
     end)
 
-    print("✅ Semua tes [ModuleName] lolos!")
-end
+    -- Tambahkan test case lain untuk business logic, error handling, dll.
+    TestRunner:It("should process transaction correctly (example)", function()
+        handlerInstance:init(mockContext)
+        local mockPlayer = { Name = "Tester", UserId = 123 }
 
-function [ModuleName]Tests:testInitialization()
-    local handler = require(script.Parent.Handler)
-    local mockContext = { DataService = {}, EventService = {} } -- (Buat mock dependencies)
+        -- Asumsikan ada _executeTransaction, _isValidPlayer, _isValidItem
+        -- Mock fungsi private ini jika perlu untuk isolasi
 
-    handler:init(mockContext)
-    -- assert(handler._isInitialized, "Modul harusnya terinisialisasi")
-end
+        -- local success, result = handlerInstance:processTransaction(mockPlayer, "sword", 1)
+        -- TestRunner:Expect(success).ToBe(true)
+    end)
 
-function [ModuleName]Tests:testBusinessLogic()
-    -- Test logika inti
-    -- local result = handler:calculatePrice("sword", 2)
-    -- assert(result == 200, "Kalkulasi harga harusnya 200")
-end
+end)
 
-function [ModuleName]Tests:testErrorConditions()
-    -- Test input buruk
-    -- local success, msg = handler:processTransaction(nil, "bad_item")
-    -- assert(not success, "Transaksi harusnya gagal")
-end
-
-return [ModuleName]Tests
+return [ModuleName]Tests -- atau biarkan TestRunner yang jalan
 ```
 
 ### 5.2 🚦 Gerbang Kualitas (Quality Gates)
 
 ```lua
 OVHL.QualityGates = {
-    CodeCoverage = "Minimal 90% test coverage",
-    Performance = "Tidak ada operasi > 16ms per frame",
-    MemoryUsage = "Tidak ada memory leak dalam 1 jam stress test",
-    ErrorHandling = "Semua metode publik WAJIB punya error handling (Ref: 3.2.3)",
-    Documentation = "100% API publik terdokumentasi di README"
+    CodeCoverage = "Minimal 80% test coverage (Target Awal)",
+    Performance = "Tidak ada operasi > 16ms per frame (diukur di runtime)",
+    MemoryUsage = "Tidak ada memory leak dalam 30 menit stress test",
+    ErrorHandling = "Semua metode publik WAJIB punya validasi & penanganan error (Ref: 3.2.3)",
+    Documentation = "README.md WAJIB diisi (minimal purpose & cara pakai dasar)"
 }
 ```
 
@@ -587,38 +705,42 @@ OVHL.QualityGates = {
 -- ✅ BENAR: Deklarasi di manifest (Ref: 2.2.1)
 -- manifest.lua
 depends = {"DataService", "InventorySystem", "EconomyService"}
--- (OS akan menyuntikkan ini ke dalam 'context' saat init)
+-- (OS akan menyuntikkan instance service/modul ini ke dalam 'context' saat init)
 
 -- ❌ SALAH: Hard require (Ref: 3.2.1)
 -- JANGAN lakukan ini di dalam Handler!
-local InventorySystem = require(...) -- (Menciptakan coupling ketat)
+local InventorySystem = require(game.ReplicatedStorage.OVHL_Modules.Server.InventorySystem...) -- (Menciptakan coupling ketat & rawan path salah)
 ```
 
 ### 6.2 Integrasi Berbasis Event
 
-(🇮🇩) Cara standar komunikasi antar modul.
-(🇬🇧) **The standard way for modules to communicate.**
+(🇮🇩) Cara standar komunikasi antar modul yang paling aman dan _decoupled_.
+(🇬🇧) **The safest and most decoupled way for modules to communicate.**
 
 ```lua
 -- Module A (Publisher)
 function QuestSystem:completeQuest(player, questId)
     -- ... (Logika selesai quest) ...
 
-    -- Siarkan event untuk modul lain
+    -- Siarkan event GLOBAL untuk didengar modul lain
     self.EventService:Publish("quest_completed", {
         player = player,
         questId = questId,
         reward = questReward
     })
+    print("[QuestSystem] Event quest_completed published.")
 end
 
 -- Module B (Subscriber)
 function AchievementSystem:init(context)
     self.EventService = context.EventService
 
-    -- Berlangganan ke event
+    -- Berlangganan ke event GLOBAL
     self.EventService:Subscribe("quest_completed", function(data)
-        self:checkQuestAchievements(data.player, data.questId)
+        -- Pastikan modul ini sudah siap
+        if not self._isInitialized then return end
+        print("[AchievementSystem] Event quest_completed received.")
+        self:_checkQuestAchievements(data.player, data.questId)
     end)
 end
 ```
@@ -629,38 +751,58 @@ end
 
 ### 7.1 Pola Pabrik (Factory Pattern)
 
-(🇮🇩) Untuk membuat instance yang fleksibel.
-(🇬🇧) **For creating flexible instances.**
+(🇮🇩) Untuk membuat instance objek yang kompleks atau bervariasi secara dinamis.
+(🇬🇧) **For creating complex or varied object instances dynamically.**
 
 ```lua
+-- Contoh: Source/Shared/Utils/VehicleFactory.lua
 local VehicleFactory = {}
+VehicleFactory._vehicleClasses = {} -- Registry
+
 function VehicleFactory:createVehicle(vehicleType, config)
-    local vehicleClass = self._vehicleClasses[vehicleType]
-    if not vehicleClass then
-        error("Tipe kendaraan tidak dikenal: " .. tostring(vehicleType))
+    local VehicleClass = self._vehicleClasses[vehicleType]
+    if not VehicleClass then
+        warn("VehicleFactory: Tipe kendaraan tidak dikenal:", vehicleType)
+        return nil
     end
-    return vehicleClass.new(config)
+    -- Asumsi setiap kelas kendaraan punya metode .new()
+    return VehicleClass.new(config)
 end
 
 function VehicleFactory:registerVehicleType(vehicleType, vehicleClass)
+    print("VehicleFactory: Mendaftarkan tipe:", vehicleType)
     self._vehicleClasses[vehicleType] = vehicleClass
 end
+
+return VehicleFactory
 ```
 
 ### 7.2 Pencari Layanan (Service Locator)
 
-(🇮🇩) Alternatif untuk Dependency Injection (DI) jika diperlukan.
-(🇬🇧) **An alternative to Dependency Injection (DI) if needed.**
+(🇮🇩) Alternatif untuk Dependency Injection (DI) jika _context_ tidak cukup atau untuk akses service dari tempat lain (gunakan dengan hati-hati!).
+(🇬🇧) **An alternative to DI if context isn't sufficient or for accessing services elsewhere (use cautiously!).**
 
 ```lua
-function ModuleHandler:init(serviceLocator)
-    -- Akses aman ke service
-    self.DataService = serviceLocator:getService("DataService")
-    self.EventService = serviceLocator:getService("EventService")
+-- Contoh: Source/Core/Kernel/ServiceLocator.lua (DIKELOLA OS)
+local ServiceLocator = {}
+local services = {}
 
-    -- Dependensi opsional
-    self.AnalyticsService = serviceLocator:getService("AnalyticsService", true) -- true = opsional
+function ServiceLocator:RegisterService(name, instance)
+    services[name] = instance
 end
+
+function ServiceLocator:GetService(name, isOptional)
+    local service = services[name]
+    if not service and not isOptional then
+        error("ServiceLocator: Service '" .. name .. "' tidak ditemukan!")
+    end
+    return service
+end
+
+return ServiceLocator
+
+-- Penggunaan di Modul (JIKA TERPAKSA):
+-- local DataService = ServiceLocator:GetService("DataService")
 ```
 
 ---
@@ -669,23 +811,26 @@ end
 
 ### 8.1 Template Pengecekan Kesehatan (Health Check)
 
-(🇮🇩) Setiap modul (terutama yang kritikal) harus punya fungsi ini.
-(🇬🇧) **Every (especially critical) module should have this function.**
+(🇮🇩) Fungsi opsional yang bisa dipanggil oleh `SystemMonitor` (OS) untuk diagnostik.
+(🇬🇧) **Optional function callable by `SystemMonitor` (OS) for diagnostics.**
 
 ```lua
 function ModuleHandler:healthCheck()
-    -- (Dipanggil oleh OS Health Monitor)
+    -- Kembalikan status internal modul
+    local status = "healthy"
+    local issues = {}
+    if not self._isInitialized then status = "uninitialized" end
+    if #self._internalState.activePlayers > 1000 then -- Contoh cek beban
+        status = "warning"
+        table.insert(issues, "High player count")
+    end
+
     return {
-        module = self.config.name,
-        status = self._isInitialized and "healthy" or "initializing",
-        performance = {
-            lastOperationTime = self._lastOpTime,
-            memoryUsage = self._memoryUsage,
-        },
-        errors = {
-            recentErrors = self._errorCount,
-            lastError = self._lastError,
-        }
+        module = _moduleConfig.name or "[ModuleName]", -- Ambil dari config
+        status = status,
+        active_players = #self._internalState.activePlayers,
+        issues = issues
+        -- Tambahkan metrik lain jika perlu
     }
 end
 ```
@@ -697,7 +842,7 @@ end
 ### 9.1 Server Module (5 Menit Setup)
 
 ```lua
--- manifest.lua
+-- Source/Modules/Server/QuickShop/manifest.lua
 return {
     name = "QuickShop",
     depends = {"DataService", "EventService"},
@@ -706,7 +851,7 @@ return {
     entry = "QuickShopHandler"
 }
 
--- QuickShopHandler.lua
+-- Source/Modules/Server/QuickShop/QuickShopHandler.lua
 local CORE_OS_PATH = game:GetService("ReplicatedStorage"):WaitForChild("OVHL_Core", 5)
 if not CORE_OS_PATH then return nil end
 
@@ -716,20 +861,17 @@ function QuickShopHandler:init(context)
     self.EventService = context.EventService
     print("🛒 QuickShop [Anti-Crash OK] siap!")
 end
-
-function QuickShopHandler:start()
-end
-
-function QuickShopHandler:stop()
-end
-
+function QuickShopHandler:start() end
+function QuickShopHandler:stop() end
 return QuickShopHandler
+
+-- Jangan lupa file Config, Tests, README kosong
 ```
 
 ### 9.2 Client Module (5 Menit Setup)
 
 ```lua
--- manifest.lua
+-- Source/Modules/Client/SimpleHUD/manifest.lua
 return {
     name = "SimpleHUD",
     autoInit = true,
@@ -737,23 +879,21 @@ return {
     entry = "SimpleHUD"
 }
 
--- SimpleHUD.lua
+-- Source/Modules/Client/SimpleHUD/SimpleHUD.lua
 local CORE_OS_PATH = game:GetService("ReplicatedStorage"):WaitForChild("OVHL_Core", 5)
 if not CORE_OS_PATH then return nil end
 
 local SimpleHUD = {}
 function SimpleHUD:init(context)
+    -- Asumsi UIManager adalah Core Service Client yang di-inject
     self.UIManager = context.UIManager
     print("📱 SimpleHUD [Anti-Crash OK] aktif!")
 end
-
-function SimpleHUD:start()
-end
-
-function SimpleHUD:stop()
-end
-
+function SimpleHUD:start() end
+function SimpleHUD:stop() end
 return SimpleHUD
+
+-- Jangan lupa file Config, Tests, README kosong
 ```
 
 ---
@@ -780,7 +920,7 @@ OVHL.FutureModuleFeatures = {
 
 ---
 
-> "Talk is cheap. Show me the code." – Linus Torvalds
+> "Simplicity is the ultimate sophistication." – Leonardo da Vinci
 
 ---
 

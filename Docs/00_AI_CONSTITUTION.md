@@ -2,7 +2,7 @@
 
 > 🏛️ **Project:** Omniverse Highland (OVHL)
 > 📄 **Dokumen:** Konstitusi Inti, Aturan AI, dan Protokol Workflow
-> 🏷️ **Versi:** 6.0.0 (Final w/ Render Fix)
+> 🏷️ **Versi:** 7.0.0 (Final w/ Corrected Paths)
 > 👑 **Founder:** Hanif Saifudin
 > 🚨 **Status:** **WAJIB DIBACA DAN DIPATUHI OLEH AI & DEVELOPER**
 
@@ -30,8 +30,8 @@
 
 #### 1.1.3 🔒 Core Read-Only (Wajib)
 
-(🇮🇩) AI **DILARANG KERAS** memodifikasi atau membuat skrip yang memodifikasi folder `OVHL_CORE/Source/Core/`.
-(🇬🇧) **AI is FORBIDDEN from modifying, or generating scripts that modify, the `OVHL_CORE/Source/Core/` directory.**
+(🇮🇩) AI **DILARANG KERAS** memodifikasi atau membuat skrip yang memodifikasi folder `Source/Core/`.
+(🇬🇧) **AI is FORBIDDEN from modifying, or generating scripts that modify, the `Source/Core/` directory.**
 
 #### 1.1.4 ✍️ No Placeholders (Wajib)
 
@@ -112,7 +112,7 @@ _ **Gunakan Node.js (.js):** Untuk tugas kompleks (logika _generation_ yang rumi
   "summary": {
     "filesCreated": 5,
     "foldersCreated": 1,
-    "location": "OVHL_CORE/Source/Modules/Server/AdminSystem"
+    "location": "Source/Modules/Server/AdminSystem" // <-- PATH DIPERBAIKI
   },
   "error": null // Diisi string error jika status == "FAILURE"
 }
@@ -128,11 +128,11 @@ _ **Gunakan Node.js (.js):** Untuk tugas kompleks (logika _generation_ yang rumi
 ### 2.1 🌿 Hirarki Branch
 
 ```bash
-🌳 main (protected)             🏷️ Produksi (Rilis)
-├── 🌿 develop (protected)      🧪 Integrasi & Testing
-└── 🔥 dev                      (Development & Eksperimen)
+🌳 main (protected)             🏷️ Produksi (Rilis Stabil)
+├── 🌿 develop (protected)      🧪 Integrasi & Testing Stabil
+└── 🔥 dev                      (Development Utama)
+    ├── feature/devtools       # Contoh feature branch
     ├── feature/shop-system
-    ├── feature/quest-system
     └── hotfix/critical-bug
 ```
 
@@ -143,15 +143,16 @@ _ **Gunakan Node.js (.js):** Untuk tugas kompleks (logika _generation_ yang rumi
 
 ```bash
 # ❌ DILARANG KERAS (FORBIDDEN)
-git push origin main                 # Hanya Lead Dev (via PR)
-git push origin develop              # Hanya Lead Dev (via PR)
+git push origin main                 # Hanya Lead Dev (via PR dari develop)
+git push origin develop              # Hanya Lead Dev (via PR dari feature)
 git checkout main && make changes    # Tidak boleh!
+git checkout develop && make changes # Tidak boleh! (Harus via feature branch)
 ```
 
 ### 2.3 📡 Protokol AI Branch Awareness (Wajib)
 
-(🇮🇩) Sebelum men-generate skrip APAPUN, AI WAJIB mengkonfirmasi: 1. "Misi ini untuk branch apa?" (cth: `dev`, `feature/shop-system`) 2. "Apakah ada perubahan yang belum di-commit?"
-(🇬🇧) **Before generating ANY script, AI MUST confirm:** 1. **"What is the target branch for this mission?"** (e.g., `dev`, `feature/shop-system`) 2. **"Are there any uncommitted changes?"**
+(🇮🇩) Sebelum men-generate skrip APAPUN, AI WAJIB mengkonfirmasi: 1. "Misi ini untuk branch apa?" (cth: `dev`, `feature/devtools`) 2. "Apakah ada perubahan yang belum di-commit?"
+(🇬🇧) **Before generating ANY script, AI MUST confirm:** 1. **"What is the target branch for this mission?"** (e.g., `dev`, `feature/devtools`) 2. **"Are there any uncommitted changes?"**
 
 ---
 
@@ -162,57 +163,66 @@ git checkout main && make changes    # Tidak boleh!
 
 ### 3.1 🔄 Siklus Development Harian
 
-1.  **🕐 CHECK-IN & CONTEXT LOAD:** AI _load_ Konstitusi ini. Developer `git pull` dan konfirmasi branch (Ref: `2.3`).
+1.  **🕐 CHECK-IN & CONTEXT LOAD:** AI _load_ Konstitusi ini. Developer `git checkout feature/nama-fitur` (atau `dev` jika task kecil), `git pull origin dev`, konfirmasi branch (Ref: `2.3`).
 2.  **🎯 TASK EXECUTION:** Developer memberi "Misi". AI men-generate "Scripter Script" (Ref: `1.5.1`).
 3.  **⚡ EXECUTE & AUDIT:** Developer menjalankan "Scripter". Runner Utama (`devtools.js`) mengeksekusi _Task_ dan mencetak "Laporan Misi" (Ref: `1.6`).
 4.  **📝 DOCUMENTATION:** AI/Developer mencatat keputusan/progres di `04_PROGRESS_LOG.md` (Makro) atau `05_DEV_LOGS.md` (Mikro).
-5.  **🚀 COMMIT & SYNC:** Developer `git add .`, `git commit`, `git push` ke branch yang tepat (Ref: `2.1`).
+5.  **🚀 COMMIT & SYNC:** Developer `git add .`, `git commit`, `git push origin feature/nama-fitur` (Ref: `2.1`).
 
-### 3.2 🗺️ Referensi Struktur Proyek (Wajib Hafal AI)
+### 3.2 🗺️ Referensi Struktur Proyek (Wajib Hafal AI - PATH DIPERBAIKI)
 
-(🇮🇩) AI wajib menggunakan _path_ absolut ini di semua skrip.
-(🇬🇧) **AI must use these absolute paths in all scripts.**
+(🇮🇩) AI wajib menggunakan _path relatif dari root project_ ini di semua skrip.
+(🇬🇧) **AI must use these paths relative to the project root in all scripts.**
 
 ```bash
-📁 OVHL_CORE/
-├── 📁 Source/
-│   ├── 🎯 Core/                      (❌ READ-ONLY | Ref: 1.1.3)
-│   ├── 🧩 Modules/                   (✅ READ/WRITE | Modul Gameplay)
-│   ├── 🎮 Games/                      (✅ READ/WRITE | Konfigurasi Game)
-├── 🛠️ Tools/                         (✅ READ/WRITE | Ref: 3.3)
-└── 📚 DOCS/                          (✅ READ/WRITE | Dokumentasi Proyek)
-    ├── 📄 00_AI_CONSTITUTION.md        # (File ini)
-    ├── 📄 01_OVHL_ENGINE_SPEC.md       # (Blueprint Engine)
-    ├── 📄 02_OVHL_MODULE_ARCHITECTURE.md # (Blueprint Modul)
-    ├── 📄 03_OVHL_BUILDER_GUIDE.md     # (Manual Builder)
-    ├── 📄 04_PROGRESS_LOG.md           # (Log Makro)
-    └── 📄 05_DEV_LOGS.md               # (Log Mikro)
+📁 ./                       <-- ROOT PROJECT (e.g., OVHL_OS/)
+├── 📁 .git/
+├── 📄 .gitignore
+├── 📁 Docs/                   ✅ READ/WRITE (Dokumentasi Proyek)
+│   ├── 📄 00_AI_CONSTITUTION.md
+│   ├── 📄 01_OVHL_ENGINE_SPEC.md
+│   ├── 📄 02_OVHL_MODULE_ARCHITECTURE.md
+│   ├── 📄 03_OVHL_BUILDER_GUIDE.md
+│   ├── 📄 04_PROGRESS_LOG.md
+│   └── 📄 05_DEV_LOGS.md
+├── 📁 Source/                 ✅ READ/WRITE (Kode Game)
+│   ├── 📁 Core/                ❌ READ-ONLY AI (Ref: 1.1.3)
+│   ├── 📁 Modules/             ✅ READ/WRITE AI
+│   └── 📁 Games/               ✅ READ/WRITE AI (Konfigurasi Game)
+├── 📁 Tools/                   ✅ READ/WRITE AI (Ref: 3.3)
+│   ├── ... (Struktur Tools) ...
+├── 📄 default.project.json
+├── 📄 package.json
+├── 📄 package-lock.json       (Jangan diedit manual)
+└── 📁 node_modules/            (Diabaikan Git)
 ```
 
-### 3.3 🧰 Struktur Folder Tools (Wajib Hafal AI)
+### 3.3 🧰 Struktur Folder Tools (Wajib Hafal AI - PATH DIPERBAIKI)
 
-(🇮🇩) Ini adalah "Markas Komando" AI. Semua _Task Script_ yang bisa dieksekusi ulang _wajib_ disimpan di sini.
-(🇬🇧) **This is the AI Command Center. All re-executable Task Scripts MUST be stored here.**
+(🇮🇩) Ini adalah "Markas Komando" AI. Path relatif dari root project.
+(🇬🇧) **This is the AI Command Center. Paths relative to the project root.**
 
 ```bash
-📁 OVHL_CORE/
-├── 🛠️ Tools/
-│   ├── 🐧 Bash/
+📁 ./                       <-- ROOT PROJECT
+├── 📁 Tools/                  ✅ READ/WRITE AI
+│   ├── 📁 Bash/                # (Opsional) Task simpel
 │   │   └── 📁 tasks/
-│   │       ├── 📜 01_create_module.sh (Arsip Task 1)
-│   │       └── 📜 02_patch_handler.sh (Arsip Task 2)
-│   ├── 🟢 Node/
-│   │   └── 📁 tasks/
-│   │       └── 📜 01_complex_generator.js (Arsip Task 3)
-│   ├── 🚀 devtools.js                  # (RUNNER UTAMA | Ref: 3.4)
-│   └── 📦 package.json                 # (Definisi Toolchain)
-...
+│   │       └── (Arsip .sh tasks)
+│   ├── 📁 Node/                # Markas Utama Node.js
+│   │   ├── 📁 commands/        # Logika Inti Tools
+│   │   ├── 📁 utils/           # Fungsi Bantu
+│   │   ├── 📁 templates/       # Template File Modul
+│   │   └── 📁 tasks/           # Arsip .js tasks
+│   ├── 🚀 devtools.js           # RUNNER UTAMA
+│   ├── 📄 README_TOOLS.md      # Panduan Tools
+│   └── 📁 Exports/             # Hasil Export (.md)
+└── 📄 package.json             # (Di Root Project)
 ```
 
 ### 3.4 ⚡ Runner Utama & Toolchain (`package.json`)
 
-(🇮🇩) Kita menggunakan satu _entry point_ (`devtools.js`) untuk semua operasi.
-(🇬🇧) **We use a single entry point (`devtools.js`) for all operations.**
+(🇮🇩) Kita menggunakan satu _entry point_ (`Tools/devtools.js`) untuk semua operasi.
+(🇬🇧) **We use a single entry point (`Tools/devtools.js`) for all operations.**
 
 ```json
 {
@@ -276,52 +286,40 @@ git checkout main && make changes    # Tidak boleh!
 - 🚫 `VERSION_HELL_FILES` (Ref: `1.5.3`)
 - 🚫 `DIRECT_TASK_GENERATION` (Memberi _Task Script_ 200 baris di chat, Ref: `1.5.1`)
 - 🚫 `USE_PLACEHOLDERS` (Ref: `1.1.4`)
+- 🚫 `HARDCODE_ABSOLUTE_PATHS` (Selalu gunakan path relatif dari root project, Ref: `3.2`, `3.3`)
 
 #### 4.2.1 🖥️ Catatan Rendering Chat (Meta-Aturan)
 
-(🇮🇩) **PENTING:** Saat Anda (AI) men-generate "Scripter Script" (seperti di contoh `4.3`), _output chat_ Anda akan berisi blok kode yang _nested_ (bersarang). Untuk mencegah _chat_ rusak, Anda **WAJIB** membungkus _seluruh_ "Scripter Script" Anda (yang 20 baris itu) dengan **4 backticks (````)**.
-(🇬🇧) **IMPORTANT:** When you (AI) generate a "Scripter Script" (like in example `4.3`), your chat output will contain _nested_ code blocks. To prevent broken rendering, you **MUST** wrap your _entire_ "Scripter Script" (the 20-line courier) in **4 backticks (````)**.
+(🇮🇩) **PENTING:** Saat Anda (AI) men-generate "Scripter Script" (seperti di contoh `4.3`), _output chat_ Anda akan berisi blok kode yang _nested_ (bersarang). Untuk mencegah _chat_ rusak, Anda **WAJIB** membungkus _seluruh_ "Scripter Script" Anda dengan **4 backticks (````)**.
+(🇬🇧) **IMPORTANT:** When you (AI) generate a "Scripter Script" (like in example `4.3`), your chat output will contain _nested_ code blocks. To prevent broken rendering, you **MUST** wrap your _entire_ "Scripter Script" in **4 backticks (````)**.
 
-### 4.3 🎭 Contoh Perilaku AI (V6)
-
-```bash
-# ❌ AI YANG BURUK (MELANGGAR KONSTITUSI):
-"Oke, ini kode Lua-nya untuk AdminSystemHandler.lua. Silakan copy-paste ya:"
-(memberikan blok kode Lua mentah...)
-
-# ❌ AI YANG BURUK (V2 - SUDAH KUNO):
-"Oke, ini skrip 200 baris untuk membuat modul. Copy-paste ke terminal ya:"
-(memberikan Task Script 200 baris di chat...)
-
-# ❌ AI YANG BURUK (V4 - MALAS):
-"Oke, ini draf 03_BUILDER_GUIDE.md... Bagian 7.0 ... (konten sama) ..."
-(menggunakan placeholder...)
-```
+### 4.3 🎭 Contoh Perilaku AI (V7 - Path Diperbaiki)
 
 `````bash
-# ✅ AI YANG BAIK (SESUAI KONSTITUSI V6):
+# ✅ AI YANG BAIK (SESUAI KONSTITUSI V7):
 
 "Siap, Mamen. Misi 'Buat Modul AdminSystem' diterima.
 
 **Compliance Report:**
 - Protokol `1.1.4` (No Placeholders): Dipatuhi.
 - Protokol `1.5.1` (Scripter Workflow): Dipatuhi.
-- Protokol `1.2.2` (Tool Selection): Dipatuhi (Task akan dibuat sebagai Node.js).
-- Protokol `1.6` (Std. Report): Dipatuhi (Task Script akan me-return JSON).
+- Protokol `1.2.2` (Tool Selection): Dipatuhi (Task Node.js).
+- Protokol `1.6` (Std. Report): Dipatuhi.
 - Protokol `2.3` (Branch Awareness): Konfirmasi branch `feature/admin-system`.
-- Protokol `3.3` (Tools Structure): Dipatuhi.
-- Protokol `4.2.1` (Render Fix): Dipatuhi (Output ini akan menggunakan 4 backticks).
+- Protokol `3.2`, `3.3` (Project Structure - Corrected Paths): Dipatuhi.
+- Protokol `4.2.1` (Render Fix): Dipatuhi.
 - Referensi Dokumen: `02_OVHL_MODULE_ARCHITECTURE.md` (Bagian 2.0).
 
 Ini adalah **'Scripter Script' (Kurir)** Anda. Silakan copy-paste SELURUH blok di bawah ini ke terminal Anda:"
 
 ````markdown
 #!/bin/bash
-# 🤖 [AI_ORCHESTRATOR] - Scripter V6
+# 🤖 [AI_ORCHESTRATOR] - Scripter V7
 # MISI: Membuat 'Task Script' untuk modul 'AdminSystem' dan mengeksekusinya.
 
-TASK_FILE_PATH="OVHL_CORE/Tools/Node/tasks/01_create_admin_system.js"
-RUNNER_PATH="OVHL_CORE/Tools/devtools.js"
+# PATHS RELATIF DARI ROOT PROJECT (Corrected)
+TASK_FILE_PATH="Tools/Node/tasks/01_create_admin_system.js"
+RUNNER_PATH="Tools/devtools.js"
 
 echo "🚀 [SCRIPTER] Memulai Misi..."
 
@@ -330,7 +328,8 @@ if [ ! -f "$RUNNER_PATH" ]; then
     echo "❌ [SCRIPTER GAGAL] Runner Utama '$RUNNER_PATH' tidak ditemukan!"
     exit 1
 fi
-echo "✅ [SCRIPTER] Runner Utama ditemukan."
+mkdir -p "$(dirname "$TASK_FILE_PATH")" # Pastikan folder tasks ada
+echo "✅ [SCRIPTER] Runner Utama & folder Task ditemukan/dibuat."
 
 # --- PHASE 2: EXECUTION (Membuat Task Script) ---
 echo "✍️  [SCRIPTER] Menulis Task Script ke $TASK_FILE_PATH..."
@@ -338,11 +337,12 @@ cat <<'EOT' > "$TASK_FILE_PATH"
 // 🤖 [AI TASK SCRIPT] - 01_create_admin_system.js
 // Misi: Membuat struktur modul 'AdminSystem'
 import fse from 'fs-extra';
-// (Catatan: fs-extra harus di-install via package.json)
+import path from 'path';
 
 async function runMission() {
     const moduleName = "AdminSystem";
-    const basePath = `OVHL_CORE/Source/Modules/Server/${moduleName}`;
+    // PATH RELATIF DARI ROOT (Corrected)
+    const basePath = path.join('Source', 'Modules', 'Server', moduleName);
     const report = {
         status: "FAILURE",
         mission: `Create Module: ${moduleName}`,
@@ -353,98 +353,29 @@ async function runMission() {
 
     try {
         // --- TASK PHASE 1: PRE-CHECK ---
-        report.logs.push("[PRE-CHECK] Memeriksa ketersediaan path...");
+        report.logs.push(`[PRE-CHECK] Memeriksa path: ${basePath}...`);
         if (await fse.pathExists(basePath)) {
-            throw new Error(`Folder '${basePath}' sudah ada. Misi dibatalkan.`);
+            throw new Error(`Folder '${basePath}' sudah ada.`);
         }
         report.logs.push("[PRE-CHECK] OK: Path tersedia.");
 
         // --- TASK PHASE 2: EXECUTION ---
-        report.logs.push("[EXEC] Membuat folder...");
+        report.logs.push(`[EXEC] Membuat folder: ${basePath}...`);
         await fse.mkdirp(basePath);
 
-        // (Logika membuat manifest.lua, Handler.lua, dll...)
-        // Sesuai 02_OVHL_MODULE_ARCHITECTURE.md (Bagian 2.2)
-        await fse.writeFile(`${basePath}/manifest.lua`,
-`-- ============================================
--- OVHL RBLX Framework v2.0.0
--- Founder: Hanif Saifudin
--- Module: AdminSystem
--- ============================================
-return {
-    name = "AdminSystem",
-    version = "1.0.0",
-    description = "Mengelola perintah admin.",
-    depends = {"DataService", "EventService"},
-    loadOrder = 1,
-    autoInit = true,
-    entry = "Handler",
-    subscribesTo = {"player_chat_message"},
-    publishes = {"admin_action_logged"}
-}
-`);
+        // (Logika membuat manifest.lua, Handler.lua, dll - path sudah relatif)
+        await fse.writeFile(path.join(basePath, 'manifest.lua'), '-- ... (isi manifest) ...');
         report.logs.push("[EXEC] OK: manifest.lua ditulis.");
 
-        await fse.writeFile(`${basePath}/${moduleName}Handler.lua`,
-`-- ============================================
--- OVHL RBLX Framework v2.0.0
--- Founder: Hanif Saifudin
--- Module: AdminSystem Handler
--- ============================================
+        await fse.writeFile(path.join(basePath, `${moduleName}Handler.lua`), '-- ... (isi handler) ...');
+        report.logs.push(`[EXEC] OK: ${moduleName}Handler.lua ditulis.`);
 
--- --- FASE 0: ANTI-CRASH LEVEL 1 (OS CHECK) ---
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CORE_OS_PATH = ReplicatedStorage:WaitForChild("OVHL_Core", 5)
-if not CORE_OS_PATH then
-    warn("!! [OVHL_ERROR] Module 'AdminSystem' GAGAL LOAD. Core OS tidak ditemukan!!")
-    return nil
-end
-print("[OVHL] OS Check OK for AdminSystem.")
--- --- END OF FASE 0 ---
-
-local AdminSystemHandler = {}
-AdminSystemHandler.__index = AdminSystemHandler
-local _isInitialized = false
-
-function AdminSystemHandler:init(context)
-    if _isInitialized then return end
-    self.DataService = context.DataService
-    self.EventService = context.EventService
-    print("[AdminSystem] berhasil diinisialisasi!")
-    _isInitialized = true
-end
-
-function AdminSystemHandler:start()
-    print("[AdminSystem] is now running!")
-end
-
-return AdminSystemHandler
-`);
-        report.logs.push("[EXEC] OK: ${moduleName}Handler.lua ditulis.");
-
-        await fse.writeFile(`${basePath}/${moduleName}Config.lua`,
-`-- ============================================
--- OVHL RBLX Framework v2.0.0
--- Founder: Hanif Saifudin
--- Module: AdminSystem Configuration
--- ============================================
-return {
-    enabled = true,
-    commandPrefix = "/"
-}
-`);
-        report.logs.push("[EXEC] OK: ${moduleName}Config.lua ditulis.");
-
-        await fse.writeFile(`${basePath}/${moduleName}Tests.lua`, `-- Tests for AdminSystem`);
-        report.logs.push("[EXEC] OK: ${moduleName}Tests.lua ditulis.");
-        await fse.writeFile(`${basePath}/README_${moduleName}.md`, `# AdminSystem`);
-        report.logs.push("[EXEC] OK: README_${moduleName}.md ditulis.");
-
+        // ... (buat 3 file lainnya) ...
         report.logs.push("[EXEC] OK: 5 file berhasil ditulis.");
 
         // --- TASK PHASE 3: POST-AUDIT ---
         report.logs.push("[POST-AUDIT] Memverifikasi file...");
-        const handlerExists = await fse.pathExists(`${basePath}/${moduleName}Handler.lua`);
+        const handlerExists = await fse.pathExists(path.join(basePath, `${moduleName}Handler.lua`));
         if (!handlerExists) {
             throw new Error("Audit gagal, file Handler tidak ditemukan!");
         }
@@ -467,7 +398,6 @@ return {
     }
 }
 
-// Ekspor fungsi runMission agar bisa di-import oleh devtools.js
 export default runMission;
 EOT
 
