@@ -1,144 +1,97 @@
-// 🤖 AI SMART SCRIPT (Untuk di-paste ke kurir.js) - VERSI 3.2
-// MISI: Sinkronisasi '03_OVHL_BUILDER_GUIDE.md' (Fix Aturan Core)
-// Waktu: 24 Oktober 2025
+// 🤖 AI Smart Script (MISI: Buat Modul 'TeleportSystem')
 
-import fs from 'fs/promises';
-import path from 'path';
+// Import 'path' buat dapetin path lengkap
+import path from 'path'; 
+// Import "Tukang" kita dari Tools (Nama fungsi sudah 100% dikonfirmasi)
+import { ensureDir, writeFile } from './Tools/ovhl-tools/utils/fileSystem.js';
+import { logger } from './Tools/ovhl-tools/core/logger.js';
+import { getTemplate } from './Tools/ovhl-tools/core/template.js';
 
 // --- KONFIGURASI MISI ---
+const MISI = "Buat Modul 'TeleportSystem'";
+const NAMA_MODUL_LOWER = 'teleportsystem';
+const NAMA_MODUL_PASCAL = 'TeleportSystem';
+// Bikin path relatifnya dulu
+const MODULE_PATH_RELATIF = `src/modules/${NAMA_MODUL_LOWER}`;
+// Bikin path absolut/lengkapnya (kayak D:\...)
+const MODULE_PATH_ABSOLUT = path.resolve(process.cwd(), MODULE_PATH_RELATIF);
 
-const BUILDER_GUIDE_FILE = 'Docs/03_OVHL_BUILDER_GUIDE.md';
-
-// --- UTILITY FUNCTION (SMART PATCHER) ---
-
-/**
- * @typedef {Object} Replacement
- * @property {RegExp} search - Regex untuk dicari
- * @property {string} replace - String pengganti
- */
-
-/**
- * @typedef {Object} PatchResult
- * @property {string} file
- * @property {boolean} success
- * @property {string} message
- * @property {boolean} patched
- */
-
-/**
- * Fungsi Patcher Cerdas dengan Audit
- * @param {string} filePath - Path ke file
- * @param {Replacement[]} replacements - Array objek search-replace
- * @returns {Promise<PatchResult>}
- */
-async function smartPatchFile(filePath, replacements) {
-    const fullPath = path.resolve(filePath);
-    const report = { file: filePath, success: false, message: '', patched: false };
-
-    try {
-        // --- PHASE 1: PRE-CHECK ---
-        report.message = `[PRE-CHECK] Mengecek file: ${fullPath}...`;
-        await fs.access(fullPath, fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK);
-        report.message = '[PRE-CHECK] OK. File ditemukan dan bisa ditulis.';
-
-        // --- PHASE 2: EXECUTION ---
-        report.message = '[EXEC] Membaca file...';
-        let content = await fs.readFile(fullPath, 'utf8');
-        const originalContent = content;
-        let patchCount = 0;
-
-        report.message = '[EXEC] Melakukan patch...';
-        for (const { search, replace } of replacements) {
-            if (search.test(content)) {
-                content = content.replace(search, replace);
-                patchCount++;
-            }
-        }
-
-        if (patchCount === 0) {
-            report.success = true;
-            report.message = '[EXEC] Selesai. Tidak ada patch yang diaplikasikan (mungkin sudah up-to-date).';
-            return report;
-        }
-        
-        report.patched = true;
-        report.message = `[EXEC] Ditemukan ${patchCount} patch. Menulis file...`;
-        await fs.writeFile(fullPath, content, 'utf8');
-        report.message = `[EXEC] OK. File berhasil di-patch.`;
-
-        // --- PHASE 3: POST-AUDIT ---
-        report.message = '[POST-AUDIT] Memverifikasi patch...';
-        const newContent = await fs.readFile(fullPath, 'utf8');
-        
-        if (newContent === originalContent) {
-            throw new Error('Audit gagal! Konten file tidak berubah setelah ditulis.');
-        }
-        if (newContent.length === 0) {
-            throw new Error('Audit gagal! File menjadi kosong setelah ditulis.');
-        }
-
-        let verificationFailed = false;
-        for (const { search, replace } of replacements) {
-            if (search.test(newContent)) {
-                verificationFailed = true;
-                report.message = `[POST-AUDIT] GAGAL: Pola "${search.source}" masih ditemukan setelah patch. Seharusnya sudah hilang.`;
-                break;
-            }
-        }
-
-        if (verificationFailed) {
-            throw new Error(report.message);
-        }
-
-        report.success = true;
-        report.message = `[POST-AUDIT] OK. ${patchCount} patch berhasil diverifikasi.`;
-
-    } catch (err) {
-        report.success = false;
-        report.message = `❌ GAGAL: ${err.message.includes('ENOENT') ? 'File tidak ditemukan di path yang diharapkan.' : err.message}`;
-        console.error(`Error pada file ${filePath}:`, err.code === 'ENOENT' ? err.message : err);
-    }
+// --- LOGIKA SPESIFIK DARI AI (Isian A-Z) ---
+const LOGIKA_AI_HANDLER = `
+    print("Logika spesifik AI untuk TeleportSystem dimulai di sini!")
     
-    return report;
-}
-
-// --- FUNGSI EKSEKUSI UTAMA ---
+    -- (Contoh: Menyiapkan listener untuk 'player_request_teleport')
+    -- IDEALNYA INI ADA DI _setupEventListeners, tapi kita letakkan di start() untuk demo
+    self.EventService:Subscribe("player_request_teleport", function(player, destination)
+        print(string.format("[TeleportSystem] Menerima request teleport untuk %s ke %s", player.Name, destination))
+        
+        -- (Nanti di sini logika validasi & teleport CFrame player)
+        -- local targetCFrame = ...
+        -- player.Character:SetPrimaryPartCFrame(targetCFrame)
+        
+        self.EventService:Publish("player_teleported", { player = player, destination = destination })
+    end)
+`;
+// ---------------------------------------------
 
 async function runMission() {
-    console.log("🚀 [KURIR MISI] Memulai Misi: 'Sinkronisasi '03_OVHL_BUILDER_GUIDE.md'' - v3.2");
-    console.log("----------------------------------------------------------------------");
-
-    const replacements = [
-        // 1. Fix Aturan Core (No. 2)
-        {
-            // Regex spesifik nyari aturan lama
-            search: /❌ Nyentuh sistem OVHL Core \(Ref: `00_CONST 1.1.3`\)/g,
-            replace: `❌ Ngoding di dalam \`Source/Core/\` (Itu tugas Core-Dev, Ref: \`00_CONST 1.1.3\`)`
-        }
-    ];
-
-    console.log(`\n📄 Memproses: ${BUILDER_GUIDE_FILE}...`);
-    const report = await smartPatchFile(BUILDER_GUIDE_FILE, replacements);
-    console.log(`   Status: ${report.message}`);
-
-    // --- LAPORAN AKHIR MISI ---
-    console.log("\n----------------------------------------------------------------------");
-    console.log("📊 [KURIR MISI] Laporan Akhir Misi:");
+    logger.info(`🚀 [KURIR MISI] Memulai: ${MISI}`);
     
-    console.log(`   - ${report.file}: ${report.success ? '✅ SUKSES' : '❌ GAGAL'} (${report.message})`);
+    try {
+        // --- FASE 1: Buat Folder ---
+        logger.startSpinner(`Membuat direktori modul: ${MODULE_PATH_RELATIF}`);
+        await ensureDir(MODULE_PATH_ABSOLUT);
+        logger.succeedSpinner(`Direktori siap.`, MODULE_PATH_ABSOLUT);
 
-    if (!report.success) {
-        console.log("\n⚠️ [KURIR MISI] Misi GAGAL. Cek log error di atas.");
-    } else {
-        console.log(`\n   Total patch diaplikasikan: ${report.patched ? replacements.length : 0} (dari ${replacements.length} target)`);
-        console.log("\n✅ [KURIR MISI] Misi Selesai dengan Sukses. File '03_OVHL_BUILDER_GUIDE.md' sudah sinkron.");
-        console.log("\n🔥 SEMUA DOKUMEN SUDAH SINKRON. Kita siap lanjut, mamen!");
+        // --- FASE 2: Tulis File dari Template ---
+
+        // 1. Buat manifest.lua
+        logger.startSpinner("Memproses manifest.lua...");
+        const manifestContent = await getTemplate('manifest.lua', {
+            __PASCAL_NAME__: NAMA_MODUL_PASCAL
+        });
+        const manifestPath = path.join(MODULE_PATH_ABSOLUT, 'manifest.lua');
+        await writeFile(manifestPath, manifestContent);
+        logger.succeedSpinner(`manifest.lua berhasil ditulis.`, manifestPath);
+
+        // 2. Buat Handler.lua
+        logger.startSpinner(`Memproses ${NAMA_MODUL_PASCAL}Handler.lua...`);
+        const handlerContent = await getTemplate('handler.lua', {
+            __PASCAL_NAME__: NAMA_MODUL_PASCAL,
+            __LOGIKA_AI_DI_SINI__: LOGIKA_AI_HANDLER // Injeksi logika AI
+        });
+        const handlerPath = path.join(MODULE_PATH_ABSOLUT, `${NAMA_MODUL_PASCAL}Handler.lua`);
+        await writeFile(handlerPath, handlerContent);
+        logger.succeedSpinner(`${NAMA_MODUL_PASCAL}Handler.lua berhasil ditulis.`, handlerPath);
+
+        // 3. Buat Config.lua
+        logger.startSpinner(`Memproses ${NAMA_MODUL_PASCAL}Config.lua...`);
+        const configContent = await getTemplate('config.lua', {
+            __PASCAL_NAME__: NAMA_MODUL_PASCAL
+        });
+        const configPath = path.join(MODULE_PATH_ABSOLUT, `${NAMA_MODUL_PASCAL}Config.lua`);
+        await writeFile(configPath, configContent);
+        logger.succeedSpinner(`${NAMA_MODUL_PASCAL}Config.lua berhasil ditulis.`, configPath);
+
+        // 4. Buat README.md
+        logger.startSpinner("Memproses README.md...");
+        const readmeContent = await getTemplate('readme.md', {
+            __PASCAL_NAME__: NAMA_MODUL_PASCAL,
+            __LOWER_NAME__: NAMA_MODUL_LOWER
+        });
+        const readmePath = path.join(MODULE_PATH_ABSOLUT, 'README.md');
+        await writeFile(readmePath, readmeContent);
+        logger.succeedSpinner(`README.md berhasil ditulis.`, readmePath);
+
+        // --- LAPORAN AKHIR ---
+        logger.success('\n✅ [KURIR MISI] Misi Selesai dengan Sukses!');
+        logger.info(`Modul '${NAMA_MODUL_LOWER}' sekarang ada di '${MODULE_PATH_RELATIF}'.`);
+
+    } catch (error) {
+        logger.failSpinner('Misi GAGAL. Menghentikan proses...');
+        logger.error(`❌ [ERROR DETAIL]: ${error.message}`);
     }
-    console.log("----------------------------------------------------------------------");
 }
 
 // --- JALANKAN MISI ---
-runMission().catch(err => {
-    console.error("\n❌❌❌ [KURIR MISI] BENCANA! Terjadi error tak terduga:", err);
-    console.log("Misi dibatalkan.");
-});
+runMission();
