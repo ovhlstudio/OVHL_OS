@@ -1,4 +1,4 @@
-# 📓 05_DEV_LOGS.md - Catatan Harian Development (Mikro)
+# 📓 04_DEV_LOGS.md - Catatan Harian Development (Mikro)
 
 > **Project:** Omniverse Highland (OVHL)
 > **Dokumen:** Log Mikro (Harian) Development
@@ -16,7 +16,7 @@
 </summary>
 
 🏷️ **1.2 Format Header Ketat:** Selalu gunakan format ini agar gampang di-scan:
-`[DD-MM-YYYY HH:MM:SS] - [KONTEKS]`
+`## [DD-MM-YYYY HH:MM:SS] - [KONTEKS]`
 
 🔍 **1.3 Konteks Harus Jelas:** Gunakan tag konteks yang konsisten. Ini contohnya:
 
@@ -24,7 +24,6 @@
 - `[FIXED]` ✅ - Bug yang sudah diselesaikan.
 - `[FITUR]` 🚀 - Nambahin fungsionalitas baru.
 - `[REFACTOR]` 🧹 - Merapikan kode tanpa mengubah fungsionalitas.
-- `[KEPUTUSAN]` ⚖️ - Keputusan arsitektur (Salin ke `04_PROGRESS_LOG.md` jika besar).
 - `[TES]` 🧪 - Proses testing atau hasil testing.
 - `[DOKS]` 📚 - Update dokumentasi (Ref: `00-05`).
 - `[WIP]` 🚧 - (Work in Progress) Lagi dikerjain tapi belum kelar.
@@ -56,9 +55,46 @@ _Atau bisa juga:_
 
 ## 2.0 LOG TERBARU MULAI DISINI
 
+## [24-10-2025 14:50:00] - [REFACTOR, DOKS]
+
+<details>
+<summary>🧹 SINKRONISASI DOKUMEN & MIGRASI WORKFLOW - (Pra-SPRINT 2)</summary>
+
+**PROGRESS:**
+
+- Selesai sesi bersih-bersih dan sinkronisasi V3 untuk semua dokumen fondasi.
+- **Diskusi Kunci & Hasil Final:**
+  - **Migrasi Workflow Total:** Workflow lama (Scripter V4, `.sh`, `devtools.js`) resmi **DIBUANG**.
+  - **Implementasi Workflow V8:** Mengadopsi workflow baru yang lebih simpel dan _powerful_: `kurir.js` (Smart Script Node.js).
+  - **Sinkronisasi `00_AI_CONSTITUTION.md`:** Bagian `3.1 (Siklus Dev)` dan `3.3 (Struktur Tools)` telah di-patch (via `kurir.js` v3.0) agar 100% merefleksikan workflow `kurir.js`.
+  - **Klarifikasi Aturan Core:** Aturan `1.1.3` (Core Kontekstual) berhasil di-fix manual.
+  - **Sinkronisasi `01_OVHL_ENGINE_SPEC.md`:** Label `Core/` di-patch (via `kurir.js` v3.1) dari `READ-ONLY` menjadi `KONSETEKSTUAL`. Referensi ke file `05_DEV_LOGS.md` yang usang juga telah dihapus.
+  - **Sinkronisasi `03_OVHL_BUILDER_GUIDE.md`:** Aturan Core untuk Builder di-patch (via `kurir.js` v3.2) agar selaras dengan `00_AI_CONSTITUTION.md`.
+- **Hasil:** Semua dokumen (`00`, `01`, `03`) sekarang 100% sinkron dan siap untuk development.
+
+**STATUS PROYEK SAAT INI:**
+
+- ✅ **Fondasi Dokumen:** V3 Final, 100% Sinkron.
+- ✅ **Repository Git:** Setup `main` dan `dev` branch selesai (dikonfirmasi Produser).
+- ✅ **Toolchain Awal:** Siap (`package.json` untuk dependensi & `kurir.js` sebagai runner AI).
+
+**NEXT_STEP:**
+
+- **Memulai SPRINT 2:** Fokus penuh pada development `Source/Core/` OS dari nol, menggunakan workflow `kurir.js`.
+
+**BLOCKER:**
+
+- Tidak ada. Fondasi bersih dan solid.
+
+**NOTES/TIPS:**
+
+- Ini adalah _hard reset_ pada workflow. AI (Gemini/Asprod) sekarang WAJIB mematuhi Konstitusi V8 (`kurir.js`) dan dilarang keras menyarankan workflow lama.
+
+</details>
+
 ---
 
-[24-10-2025 08:30:00] - [REFACTOR]
+## [24-10-2025 08:30:00] - [REFACTOR]
 
 <details>
 <summary>🧹 REFACTOR V2 DOKUMENTASI - Sesi Refactoring Intensif Selesai (SPRINT 1)</summary>
@@ -98,7 +134,7 @@ _Atau bisa juga:_
 
 ---
 
-[23-10-2025 14:00:00] - [DOKS]
+## [23-10-2025 14:00:00] - [DOKS]
 
 <details>
 <summary>📚 DOKS - Membuat Draf Awal V1 untuk 5 Dokumen Fondasi</summary>
@@ -110,10 +146,6 @@ _Atau bisa juga:_
 - Membuat draf V1 untuk `03_OVHL_MODULE_ARCHITECTURE.md`.
 - Membuat draf V1 untuk `04_BUILDER_GUIDE.md`.
 - Membuat draf V1 untuk `05_PROGRESS_LOG.md`.
-
-**NEXT_STEP:**
-
-- Mengidentifikasi kelemahan dalam workflow AI dan arsitektur (Ref: `04_PROGRESS_LOG.md` V1 - BLK-001).
 
 **BLOCKER:**
 

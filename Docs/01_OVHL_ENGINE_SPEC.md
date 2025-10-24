@@ -48,7 +48,7 @@ OVHL_PRINCIPLES = {
 ```bash
 📁 ./                       <-- ROOT PROJECT (e.g., OVHL_OS/)
 ├── 📁 Source/                 # Kode Game
-│   ├── 📁 Core/                # Inti Engine (❌ READ-ONLY AI)
+│   ├── 📁 Core/                # Inti Engine (⚠️ KONSETEKSTUAL (Ref: 00_CONST 1.1.3))
 │   │   ├── 📁 Kernel/           # Bootstrapper & ServiceManager
 │   │   ├── 📁 Server/           # Logika Sisi Server
 │   │   │   ├── 📁 Services/    # Layanan Global (Data, Event, Zone)
@@ -68,17 +68,16 @@ OVHL_PRINCIPLES = {
 │       ├── 📁 OjolRoleplay/     # Contoh Profil Game A
 │       └── 📁 RacingGame/       # Contoh Profil Game B
 ├── 📁 Tools/                   # Toolchain Developer (✅ AI AREA)
-│   ├── 📁 Bash/
-│   ├── 📁 Node/
-│   ├── 🚀 devtools.js          # Runner Utama
 │   ├── 📁 Exports/             # Hasil Laporan
+│   ├── 📁 ovhl-tools/         # Script inti (Node.js)
+│   └── 📁 node_modules/       # Dependensi (via package.json)
 │   └── 📄 README_TOOLS.md
 ├── 📁 Docs/                    # Dokumentasi Proyek (✅ AI AREA)
 │   ├── 📄 00_AI_CONSTITUTION.md
 │   ├── 📄 01_OVHL_ENGINE_SPEC.md # (File ini)
 │   ├── 📄 02_OVHL_MODULE_ARCHITECTURE.md
 │   ├── 📄 03_OVHL_BUILDER_GUIDE.md
-│   ├── 📄 04_PROGRESS_LOG.md
+│   ├── 📄 04_DEV_LOGS.md
 │   └── 📄 05_DEV_LOGS.md
 ├── 📄 default.project.json     # Konfigurasi Rojo
 ├── 📄 package.json             # Konfigurasi Node.js

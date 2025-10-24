@@ -28,7 +28,7 @@ Panduan ini dibuat untuk **non-koder** (kamu yang nggak ngoding) yang mau bikin 
 - ❌ Nulis kode Lua sama sekali
 - ❌ Ngedit file `.lua`
 - ❌ Paham konsep pemrograman
-- ❌ Nyentuh sistem OVHL Core (Ref: `00_CONST 1.1.3`)
+- ❌ Ngoding di dalam `Source/Core/` (Itu tugas Core-Dev, Ref: `00_CONST 1.1.3`)
 
 ---
 
