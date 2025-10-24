@@ -1,0 +1,10 @@
+{
+  "name": "OVHL_OS",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": { "$path": "Source/Core" },
+    "ServerScriptService": { "$path": "Source/Modules/Server" },
+    "StarterPlayer": { "StarterPlayerScripts": { "$path": "Source/Modules/Client" } },
+    "ReplicatedFirst": { "$path": "Source/Modules/Shared" }
+  }
+}
