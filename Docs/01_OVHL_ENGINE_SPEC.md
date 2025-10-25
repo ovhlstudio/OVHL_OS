@@ -1,11 +1,12 @@
-# 🚀 01_OVHL_ENGINE_SPEC.md - OMNIVERSE HIGHLAND CORE OS
+# 🚀 01_OVHL_ENGINE_SPEC.MD - OMNIVERSE HIGHLAND CORE OS
 
-| 🏛️ **Project** | Omniverse Highland (OVHL)                  |
-| :------------- | :----------------------------------------- |
-| 📄 **Dokumen** | Spesifikasi Teknis Core Engine             |
-| 🏷️ **Versi**   | 4.0.0 (Path V9 Final & Naming Consistency) |
-| 👑 **Founder** | Hanif Saifudin                             |
-| 🚨 **Status**  | **AKTIF (Sesuai Konstitusi \`00\`)**       |
+| 🏛️ **Project** | Omniverse Highland (OVHL)            |
+| :------------- | :----------------------------------- |
+| 📄 **Dokumen** | Spesifikasi Teknis Core Engine       |
+| 🏷️ **Versi**   | **5.0.0 (Revisi V10.2 Compliance)**  |
+| 👑 **Founder** | Hanif Saifudin                       |
+| 🗓️ **Update**  | 25 Oktober 2025                      |
+| 🚨 **Status**  | **AKTIF (Sesuai Konstitusi \`00\`)** |
 
 ---
 
@@ -32,89 +33,85 @@ OVHL_PRINCIPLES = {
 
 ## 🏛️ 2.0 TINJAUAN ARSITEKTUR
 
-### 2.1 🗺️ **CONTOH** Struktur Folder Revolusioner (V9 Paths)
+### 2.1 🗺️ Struktur Folder V10 (Sesuai Konstitusi `00` 3.2)
 
-(🇮🇩) Struktur ini WAJIB dipatuhi oleh AI dan Developer (Ref: \`00_AI_CONSTITUTION.md - Protokol 3.2\`). Path relatif dari Root Project.
-(🇬🇧) **This structure MUST be adhered to by AI and Developers. Paths relative to Project Root.**
+(🇮🇩) Struktur ini WAJIB dipatuhi oleh AI dan Developer. Path `lowercase` (`src/`) adalah standar baru menggantikan `Source/PascalCase` yang usang.
+(🇬🇧) **This structure MUST be adhered to by AI and Developers. `src/lowercase` paths are the new standard, replacing the obsolete `Source/PascalCase`.**
 
 ```text
-📁 ./                                 # root project
-├── 📁 Source/
-│   ├── 📁 Client/
-│   │   └── 📄 Init.client.lua         # Entrypoint Client
-│   │
-│   ├── 📁 Server/
-│   │   └── 📄 Init.server.lua         # Entrypoint Server
-│   │
-│   ├── 📁 Core/                      # Core OS (di ReplicatedStorage)
-│   │   ├── 📁 Client/
+📁 ./                       <-- ROOT PROJECT (OVHL_OS/)
+├── 📁 .git/
+├── 📄 .gitignore
+├── 📁 docs/                   ✅ READ/WRITE (Dokumentasi Proyek)
+│   ├── 📄 00_AI_CONSTITUTION.md
+│   ├── 📄 01_OVHL_ENGINE_SPEC.md
+│   ├── 📄 02_OVHL_MODULE_ARCHITECTURE.md
+│   ├── 📄 03_OVHL_BUILDER_GUIDE.md
+│   └── 📄 04_DEV_LOGS.md
+├── 📁 src/                    ✅ READ/WRITE (Kode Game)
+│   ├── 📁 client/              (Entrypoint Client)
+│   │   └── 📄 Main.client.lua
+│   ├── 📁 replicated/
+│   │   ├── 📁 Core/            (Core Client & Shared)
 │   │   │   ├── 📁 Kernel/
-│   │   │   │   └── ClientBootstrapper.lua
-│   │   │   └── 📁 Services/
-│   │   │       ├── UIService.lua
-│   │   │       └── InputService.lua
-│   │   │
-│   │   ├── 📁 Server/
-│   │   │   ├── 📁 Kernel/
-│   │   │   │   ├── ServerBootstrapper.lua
-│   │   │   │   └── ModuleLoader.lua
-│   │   │   └── 📁 Services/
-│   │   │       ├── ServiceManager.lua
-│   │   │       ├── EventService.lua
-│   │   │       ├── DataService.lua
-│   │   │       └── ReplicationService.lua
-│   │   │
+│   │   │   ├── 📁 Services/
+│   │   │   └── ...
+│   │   ├── 📁 Modules/         (Modul Client & Shared)
+│   │   │   └── 📁 pingpong/
 │   │   └── 📁 Shared/
 │   │       └── 📁 Utils/
-│   │           └── Logger.lua
-│   │
-│   ├── 📁 Modules/                   # Gameplay Modules
-│   │   ├── 📁 simplehud/
-│   │   ...
-│   └── 📁 Replicated/                # Aset Game Profile
-│       ├── 📁 assets/
-│       ...
-│
-├── 📁 Tools/                         # Developer Tools
-│   └── 📁 ovhl-tools/
-│
-├── 📁 docs/                          # Documentation
-│   ├── 00_AI_CONSTITUTION.md
-│   └── 01_OVHL_ENGINE_SPEC.md
-│
-└── 📄 default.project.json           # Rojo config
+│   ├── 📁 server/              (Entrypoint Server)
+│   │   └── 📄 Main.server.lua
+│   └── 📁 serverstorage/
+│       ├── 📁 Core/            (Core Server)
+│       │   ├── 📁 Kernel/
+│       │   ├── 📁 Services/
+│       │   └── ...
+│       └── 📁 Modules/         (Modul Server)
+│           └── 📁 pingpong/
+├── 📁 Tools/                   (Tools non-NPM)
+│   └── 📄 .gitkeep
+├── 📄 default.project.json     (Rojo Config V10 "Hybrid Fix")
+├── 📄 package.json
+├── 📄 package-lock.json
+├── 📄 kurir.js                 <-- "Mandor Misi" Primer (Smart Script)
+├── 📄 kurir.sh                 <-- "Mandor Misi" Fallback (Dumb Script)
+└── 📁 node_modules/
+    └── 📁 ovhl-tools/          (WAJIB DI-IMPORT DARI SINI)
 ```
 
-### 2.2 🔗 Struktur Proyek Rojo (Corrected Paths)
+### 2.2 🔗 Struktur Proyek Rojo V10 ("Hybrid Fix")
 
-(🇮🇩) Struktur ini mendefinisikan bagaimana file di-sync ke Roblox Studio.
-(🇬🇧) **This structure defines how files are synced to Roblox Studio.**
+(🇮🇩) Struktur ini mendefinisikan bagaimana file di-sync ke Roblox Studio. Ini adalah "Master Kebenaran" yang terbukti work (Ref: `04_DEV_LOGS 14:30:00`).
+(🇬🇧) **This structure defines how files are synced to Roblox Studio. This is the "Master Truth" (Ref: `04_DEV_LOGS 14:30:00`).**
 
 ```json
 {
-  "name": "OVHL_OJOL_CLONE",
+  "name": "OVHL_OS_HYBRID_FIX",
   "tree": {
     "$className": "DataModel",
+
     "ReplicatedStorage": {
-      "Core": {
-        "$path": "Source/Core"
-      },
-      "Modules": {
-        "$path": "Source/Modules"
-      },
-      "Replicated": {
-        "$path": "Source/Replicated"
-      }
+      "$path": "src/replicated"
     },
+
+    "ServerStorage": {
+      "$path": "src/serverstorage"
+    },
+
     "ServerScriptService": {
-      "Init": {
-        "$path": "Source/Server/Init.server.lua"
+      "$className": "ServerScriptService",
+      "Main": {
+        "$path": "src/server/Main.server.lua"
       }
     },
+
     "StarterPlayer": {
+      "$className": "StarterPlayer",
       "StarterPlayerScripts": {
-        "Init": {
-          "$path": "Source/Client/Init.client.lua"
+        "$className": "StarterPlayerScripts",
+        "Main": {
+          "$path": "src/client/Main.client.lua"
         }
       }
     }
@@ -124,7 +121,7 @@ OVHL_PRINCIPLES = {
 
 **CATATAN PENTING (Rojo Mapping):**
 
-1.  **GameConfig Path:** Path \`src/games/_prototype\` digunakan sebagai \_default_ yang aman untuk _initial setup_. Nanti, gunakan _script_ di `kurir.js` untuk mengubah path ini ke game profile yang aktif sebelum sync Rojo.
+1.  **GameConfig Path:** Path `src/games/_prototype` (jika ada) digunakan sebagai _default_ yang aman. Nanti, gunakan _script_ di `kurir.js` untuk mengubah path ini ke game profile yang aktif.
 2.  **Folder \`Tools/\` dan \`docs/\`:** Folder-folder ini **sengaja tidak dimasukkan** dalam mapping Rojo karena berisi _developer tools_ dan dokumentasi.
 
 ---
@@ -133,16 +130,16 @@ OVHL_PRINCIPLES = {
 
 ### 3.1 ⚡ Sistem Bootstrap Cerdas (Intelligent Bootstrap System)
 
-- **Lokasi:** \`src/core/kernel/ModuleLoader.lua\` (Fungsi inti)
+- **Lokasi:** `src/serverstorage/Core/Kernel/ServerBootstrapper.lua` & `.../ModuleLoader.lua`
 - **Fungsi:**
-  - \`AutoDetectGameProfile()\`
-  - \`ScanAndLoadModules()\` (Scan folder \`src/modules/\`)
-  - \`HealthCheck()\`
+  - `AutoDetectGameProfile()`
+  - `ScanAndLoadModules()` (Scan folder `src/replicated/Modules/` & `src/serverstorage/Modules/`)
+  - `HealthCheck()`
 
 ### 3.2 🔥 Mesin Hot-Reload (Hot-Reload Engine)
 
-- **Lokasi:** \`src/core/services/server/HotReloadEngine.lua\`
-- **Fungsi:** \`LiveModuleUpdate()\`, \`ConfigHotSwap()\`, \`StatePreservation()\`
+- **Lokasi:** `src/serverstorage/Core/Services/HotReloadEngine.lua` (Asumsi Path)
+- **Fungsi:** `LiveModuleUpdate()`, `ConfigHotSwap()`, `StatePreservation()`
 
 ### 3.3 🖌️ Rangkaian Tools Builder Visual (Builder Visual Tools Suite)
 
@@ -151,13 +148,13 @@ OVHL_PRINCIPLES = {
 
 ### 3.4 🔄 Sistem Migrasi Otomatis (Auto-Migration System)
 
-- **Lokasi:** \`src/core/services/server/MigrationEngine.lua\`
-- **Fungsi:** \`VersionTracking()\`, \`SmartDataUpgrade()\`, \`RollbackProtection()\`
+- **Lokasi:** `src/serverstorage/Core/Services/MigrationEngine.lua` (Asumsi Path)
+- **Fungsi:** `VersionTracking()`, `SmartDataUpgrade()`, `RollbackProtection()`
 
 ### 3.5 🎮 Arsitektur Multi-Game (Multi-Game Architecture)
 
-- **Lokasi:** \`src/core/kernel/GameProfileManager.lua\`
-- **Fungsi:** \`SwitchGameProfile()\`
+- **Lokasi:** `src/serverstorage/Core/Kernel/GameProfileManager.lua` (Asumsi Path)
+- **Fungsi:** `SwitchGameProfile()`
 
 ```lua
 -- Contoh GameProfiles
@@ -174,17 +171,17 @@ OVHL.GameManager = {
 
 ### 4.1 💉 Aturan Injeksi (Injection Rules)
 
-(🇮🇩) Core Services **DILARANG KERAS** memanggil satu sama lain secara langsung. Komunikasi **WAJIB** melalui \`EventService\` (\`src/core/services/shared/EventService.lua\`) atau injeksi melalui \`ServiceManager\`.
+(🇮🇩) Core Services **DILARANG KERAS** memanggil satu sama lain secara langsung. Komunikasi **WAJIB** melalui \`EventService\` (`src/serverstorage/Core/Services/EventService.lua`) atau injeksi melalui \`ServiceManager\`.
 (🇬🇧) **Core Services MUST NOT call each other directly. Communication MUST be via \`EventService\` or injection via \`ServiceManager\`.**
 
 ### 4.2 Contoh Injeksi ke Modul
 
 ```lua
--- Dari ServiceManager.lua
+-- Dari ServiceManager.lua (Server-side)
 local function setupModuleContext(module)
     return {
-        EventService = ServiceManager:getSharedService("EventService"),
-        DataService = ServiceManager:getServerService("DataService"),
+        EventService = ServiceManager:getService("EventService"),
+        DataService = ServiceManager:getService("DataService"),
         -- ...
     }
 end
@@ -201,14 +198,14 @@ end
 
 ### 5.2 🎯 Metrik Sukses - Target 30 Hari
 
-- **Minggu 1 (Selesai):** Fondasi Dokumen V4 & Setup Awal.
+- **Minggu 1 (Selesai):** Fondasi Dokumen V5 (Konstitusi V10) & Setup Awal.
 - **Minggu 2:** Fondasi Inti (Bootstrap, Core Services Minimal, Module System Dasar).
 - **Minggu 3:** Fitur Lanjutan Awal (Hot-Reload Dasar, Visual Tools MVP).
 - **Minggu 4:** Integrasi & Testing Awal (Tes Bootstrap & Modul Dasar).
 
 ### 5.3 🛣️ Roadmap Masa Depan (Pasca 30 Hari)
 
-- **Fase 2:** AI Co-Pilot Canggih (_Smart Script_ diperkaya, _command_ lebih banyak).
+- **Fase 2:** AI Co-Pilot Canggih (`kurir.js` & `ovhl-tools` yang lebih canggih).
 - **Fase 3:** Integrasi Cloud (DataStore2 / ProfileService).
 - **Fase 4:** Ekosistem Marketplace (Belum direncanakan detail).
 
@@ -222,10 +219,10 @@ end
 - \`HealthMonitoring\`: Service \`SystemMonitor\` akan memantau _heartbeat_ service lain.
 - \`RecoveryMode\`: Mode darurat dengan modul minimal / hanya Core Services.
 
-### 6.2 🧹 Tools Maintenance (Diimplementasikan via \`kurir.js\`)
+### 6.2 🧹 Tools Maintenance (Diimplementasikan via `kurir.js` / `ovhl-tools`)
 
-- \`npm run check:core\`: (Implementasi via \`kurir.js\`) Cek kesehatan Core Services.
-- \`npm run audit:all\`: (Implementasi via \`kurir.js\`) Jalankan Audit Generator dan buat laporan (Ref: \`README_TOOLS.md\`).
+- \`npm run check:core\`: (Implementasi via `kurir.js`) Cek kesehatan Core Services.
+- \`npm run audit:all\`: (Implementasi via `kurir.js`) Jalankan Audit Generator dan buat laporan.
 
 > "Code is like humor. When you have to explain it, it’s bad." – Cory House
 

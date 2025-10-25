@@ -1,10 +1,12 @@
-# 🎨 03_OVHL_BUILDER_GUIDE.md - Panduan Visual Membangun Dunia
+# 🎨 03_OVHL_BUILDER_GUIDE.MD - Panduan Visual Membangun Dunia
 
-> 🏛️ **Project:** Omniverse Highland (OVHL)
-> 📄 **Dokumen:** Panduan Builder untuk Non-Koder
-> 🏷️ **Versi:** 2.1.0 (Final w/ Dynamic Notes)
-> 👑 **Founder:** Hanif Saifudin
-> 🟢 **Status:** AKTIF (Sesuai Konstitusi `00`)
+| 🏛️ **Project** | Omniverse Highland (OVHL)            |
+| :------------- | :----------------------------------- |
+| 📄 **Dokumen** | Panduan Builder untuk Non-Koder      |
+| 🏷️ **Versi**   | **3.0.0 (Revisi V10.2 Compliance)**  |
+| 👑 **Founder** | Hanif Saifudin                       |
+| 🗓️ **Update**  | 25 Oktober 2025                      |
+| 🚨 **Status**  | **AKTIF (Sesuai Konstitusi \`00\`)** |
 
 ---
 
@@ -28,7 +30,7 @@ Panduan ini dibuat untuk **non-koder** (kamu yang nggak ngoding) yang mau bikin 
 - ❌ Nulis kode Lua sama sekali
 - ❌ Ngedit file `.lua`
 - ❌ Paham konsep pemrograman
-- ❌ Ngoding di dalam `Source/Core/` (Itu tugas Core-Dev, Ref: `00_CONST 1.1.3`)
+- ❌ Ngoding di dalam `src/core/` (Itu tugas Core-Dev, Ref: `00_CONST 1.1.3`)
 
 ---
 
@@ -575,7 +577,7 @@ FASE 2: 🧑‍🎓 MENENGAH
 FASE 3: 👨‍🏫 MAHIR
 ├── Merancang dunia skala besar dengan tata kota kompleks (Ref: 8.3)
 ├── Menggunakan Atribut kustom untuk detail unik (Ref: 8.2)
-├── Fokus pada optimasi performa & pengalaman player (Ref: 9.1)
+└── Fokus pada optimasi performa & pengalaman player (Ref: 9.1)
 
 FASE 4: 👑 MASTER BUILDER
 ├── Menciptakan konsep gameplay original menggunakan sistem OVHL.
