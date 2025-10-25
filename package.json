@@ -1,0 +1,8 @@
+{
+  "name": "OVHL-OS",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "ovhl-tools": "^4.0.4"
+  }
+}
