@@ -1,0 +1,7 @@
+{
+  "name": "Generator Audit",
+  "slug": "audit",
+  "description": "Pindai proyek & buat laporan audit",
+  "emoji": "📊",
+  "main": "run"
+}
