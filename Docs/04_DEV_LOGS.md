@@ -1,10 +1,10 @@
-# 📓 04_DEV_LOGS.md - Catatan Harian Development (Mikro)
+# 📓 04_DEV_LOGS.MD - Catatan Harian Development (Mikro)
 
 > **Project:** Omniverse Highland (OVHL)
 > **Dokumen:** Log Mikro (Harian) Development
-> **Versi:** 2.0.0 (Final Refactored)
+> **Versi:** 3.0.0 (Sinkronisasi Arsitektur V10)
 > **Founder:** Hanif Saifudin
-> **Status:** AKTIF (Siap untuk SPRINT 2)
+> **Status:** AKTIF (Sesuai Konstitusi `00`)
 
 ---
 
@@ -27,6 +27,7 @@
 - `[TES]` 🧪 - Proses testing atau hasil testing.
 - `[DOKS]` 📚 - Update dokumentasi (Ref: `00-05`).
 - `[WIP]` 🚧 - (Work in Progress) Lagi dikerjain tapi belum kelar.
+- `[ARSITEKTUR]` 🏛️ - Perubahan desain/konsep fundamental.
 
 🎁 **1.4 Selalu Pakai Spoiler:** Bungkus _selalu_ log detailmu pakai tag `<details>` biar rapi dan gampang di-scroll di GitHub.
 
@@ -55,6 +56,40 @@ _Atau bisa juga:_
 
 ## 2.0 LOG TERBARU MULAI DISINI
 
+## [25-10-2025 15:00:00] - [ARSITEKTUR, REFACTOR, DOKS, HOTFIX]
+
+<details>
+<summary>🏛️⚡ V10 "SMART LIBRARY" & SINKRONISASI TOTAL - (Fix `UIManager` & `InputService` bugs)</summary>
+
+**CASE:**
+Melanjutkan sesi dari log `14:30:00`. `Core OS` sudah boot tapi masih ada error di Output (`UIManager` & `InputService`). Selain itu, Arsitektur `V9` (Konstitusi, `kurir.js` lama, path `Source/`) sudah usang dan perlu dirombak total.
+
+**SOLVED - ARSITEKTUR V10 (Fundamental):**
+
+1.  **Workflow V10 "Smart Library":** (Ref: `00_CONST 1.4`)
+    - **Primer (`kurir.js`):** AI generate script yang `import { logger, ... } from "ovhl-tools"` (NPM Package).
+    - **Fallback (`kurir.sh`):** AI generate script "bodoh" yang hanya manggil CLI `npx ovhl-tools ...`.
+2.  **Struktur Folder V10:** (Ref: `00_CONST 3.2`)
+    - Finalisasi struktur `src/lowercase/` (misal: `src/replicated/Modules/`, `src/serverstorage/Core/`, `src/client/Main.client.lua`, dll). Path `Source/PascalCase/` resmi USANG.
+3.  **Protokol AI V11 "Segel Ganda":** (Ref: `00_CONST 1.1.5`)
+    - Meresmikan protokol "Segel Ganda" (Header & Footer metadata) untuk _semua_ blok kode yang di-generate AI, demi kemudahan tracking (mencakup `PATH:`, `STUDIO:`, `AUTHOR:`, `🏁 End of:`).
+4.  **Protokol Git V10:** (Ref: `00_CONST 2.0`)
+    - Menambahkan aturan wajib AI untuk `CHECK_BRANCH` di awal sesi, proteksi `main`/`dev`, dan bantuan `commit message`.
+
+**SOLVED - HOTFIX (Lanjutan Log 14:30):**
+
+1.  **Rojo Hybrid Fix:** Dikonfirmasi `default.project.json` "Hybrid Fix" (dari log 14:30) yang menggunakan `Main.server.lua` (tanpa `$className` child) adalah "Master Kebenaran" (Ref: `01_SPEC 2.2`).
+2.  **`UIManager.lua` (FIXED):** 🐞 Syntax error `Parent:t` di `ShowToastNotification` diperbaiki menjadi `Parent = t`.
+3.  **`InputService.lua` (FIXED):** 🐞 Runtime error `invalid argument #3 to 'format' (got nil)` di `Logger:info` diperbaiki. `InputService:init` sekarang memanggil `Logger:new("InputService")` untuk membuat _instance_ logger yang benar sebelum digunakan.
+
+**HASIL & STATUS:**
+
+- ✅ **Core OS: NO ERROR!** Server dan Client boot 100% bersih tanpa error (kecuali warning DataStore yang normal di Studio).
+- ✅ **Dokumen:** `00_AI_CONSTITUTION.md`, `01_OVHL_ENGINE_SPEC.md`, `02_OVHL_MODULE_ARCHITECTURE.md`, dan `03_OVHL_BUILDER_GUIDE.md` telah sukses di-revisi ke V10+ dan di-ACC oleh Developer.
+- ✅ **AI (Gemini):** Sekarang beroperasi penuh di bawah Konstitusi V10.2 yang baru.
+
+</details>
+
 ## [25-10-2025 14:30:00] - [FIXED, HOTFIX, LESSON_LEARNED]
 
 <details>
@@ -73,21 +108,20 @@ Setelah refactor security (memisahkan Core ke ServerStorage & ReplicatedStorage 
 
 **PROBLEMATIKA (Root Cause Analysis):**
 
-1. **Over-Specification di `default.project.json`:**
-   ```json
-   // ❌ SALAH (Yang gue coba):
-   "ServerScriptService": {
-     "$className": "ServerScriptService",
-     "init": {
-       "$className": "Script",  // ← Over-specified!
-       "$path": "src/server/init.server.lua"
-     }
-   }
-   ```
+1.  **Over-Specification di `default.project.json`:**
 
-````
+    ```json
+    // ❌ SALAH (Yang gue coba):
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "init": {
+        "$className": "Script",  // ← Over-specified!
+        "$path": "src/server/init.server.lua"
+      }
+    }
+    ```
 
-**Masalah:** Rojo punya auto-detection dari file extension (`.server.lua` → Script, `.client.lua` → LocalScript). Nambah `$className` explicit di child level malah bikin **conflict** atau Rojo bingung.
+    **Masalah:** Rojo punya auto-detection dari file extension (`.server.lua` → Script, `.client.lua` → LocalScript). Nambah `$className` explicit di child level malah bikin **conflict** atau Rojo bingung.
 
 2.  **Reserved Naming (`init`):** Entry point file bernama `init.server.lua` kemungkinan **conflict** dengan Rojo's internal indexing system (Rojo pake `init.lua` untuk folder indexing).
 
@@ -95,40 +129,39 @@ Setelah refactor security (memisahkan Core ke ServerStorage & ReplicatedStorage 
 
 ```json
 {
-"name": "OVHL_OS_FIXED",
-"tree": {
-  "$className": "DataModel",
+  "name": "OVHL_OS_FIXED",
+  "tree": {
+    "$className": "DataModel",
 
-  "ReplicatedStorage": {
-    "$className": "ReplicatedStorage",
-    "$path": "src/replicated"
-  },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "$path": "src/replicated"
+    },
 
-  "ServerStorage": {
-    "$className": "ServerStorage",
-    "$path": "src/serverstorage"
-  },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$path": "src/serverstorage"
+    },
 
-  "ServerScriptService": {
-    "$className": "ServerScriptService",
-    "Main": {
-      "$path": "src/server/Main.server.lua"  // ← TANPA $className!
-    }
-  },
-
-  "StarterPlayer": {
-    "$className": "StarterPlayer",
-    "StarterPlayerScripts": {
-      "$className": "StarterPlayerScripts",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
       "Main": {
-        "$path": "src/client/Main.client.lua"  // ← TANPA $className!
+        "$path": "src/server/Main.server.lua" // ← TANPA $className!
+      }
+    },
+
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Main": {
+          "$path": "src/client/Main.client.lua" // ← TANPA $className!
+        }
       }
     }
   }
 }
-}
-
-````
+```
 
 **PERUBAHAN KRUSIAL:**
 
@@ -139,7 +172,7 @@ Setelah refactor security (memisahkan Core ke ServerStorage & ReplicatedStorage 
 **KEY LEARNINGS (Best Practices Rojo Mapping):**
 
 | Level              | Rule                                          | Example                                                            |
-| ------------------ | --------------------------------------------- | ------------------------------------------------------------------ |
+| :----------------- | :-------------------------------------------- | :----------------------------------------------------------------- |
 | **Container**      | ✅ WAJIB `$className`                         | `"ServerScriptService": { "$className": "ServerScriptService" }`   |
 | ---                | ---                                           | ---                                                                |
 | **Script Files**   | ❌ JANGAN `$className` (kalo extension jelas) | `"Main": { "$path": "file.server.lua" }`                           |
@@ -343,14 +376,14 @@ Setelah berhasil membangun Core OS V8 (Server & Client), misi dilanjutkan ke V9 
 }
 ```
 
-NEXT_STEP:
+**NEXT_STEP:**
 Investigasi lebih lanjut Rojo Sync Silent Failure:
 Konfirmasi hasil Clear Cache Studio & Tes Sync Simpel.
 Cek versi Rojo & Roblox Studio.
 Coba sync ke project Roblox yang benar-benar baru (bukan cuma baseplate).
 Jika semua gagal, pertimbangkan lapor bug ke Rojo.
 
-NOTES/TIPS:
+**NOTES/TIPS:**
 TEMUAN KRUSIAL ROJO: Nama file entry point (Script/LocalScript) yang mengandung titik (.) kemungkinan membutuhkan $className di default.project.json agar tipenya benar. Namun, ini tidak menyelesaikan masalah sync konten kosong.
 
 DOKUMEN USANG: Dokumen 00_AI_CONSTITUTION.md dan 01_OVHL_ENGINE_SPEC.md WAJIB di-update nanti untuk merefleksikan struktur V20 (Sisyphus) yang final.
