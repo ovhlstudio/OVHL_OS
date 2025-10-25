@@ -1,21 +1,33 @@
-
--- [src/replicated/Shared/Utils/Logger.lua] (V2 - CLIENT Tag Sync)
+--!strict
+-- [src/replicated/Shared/Utils/Logger.lua] (V3 - Synced with SystemMonitor)
 local Logger = {}
-Logger.__index = Logger
-local LOG_PREFIX = "[OVHL SYS MONITOR v1.0] [CLIENT] " 
+local LOG_PREFIX = "[OVHL SYS MONITOR v1.0] [CLIENT] "
 
-function Logger:new(serviceName)
-	local obj = setmetatable({}, Logger)
-	obj.serviceName = serviceName or "ClientCore"
-	return obj
+-- Functional style (sama seperti SystemMonitor)
+function Logger:Log(source: string, level: string, code: string, message: string)
+	local log = string.format("%s[%s] [%s] [%s] %s", LOG_PREFIX, source, code, level, message)
+	if level == "ERROR" or level == "WARN" then
+		warn(log)
+	else
+		print(log)
+	end
 end
-function Logger:info(message)
-	print(string.format("%s[%s] [CLIENT_CODE] [INFO] %s", LOG_PREFIX, self.serviceName, message))
+
+-- Shorthand methods (untuk convenience)
+function Logger:Info(source: string, code: string, message: string)
+	self:Log(source, "INFO", code, message)
 end
-function Logger:warn(message)
-	print(string.format("%s[%s] [CLIENT_CODE] [WARN] %s", LOG_PREFIX, self.serviceName, message))
+
+function Logger:Warn(source: string, code: string, message: string)
+	self:Log(source, "WARN", code, message)
 end
-function Logger:error(message)
-	warn(string.format("%s[%s] [CLIENT_CODE] [ERROR] %s", LOG_PREFIX, self.serviceName, message))
+
+function Logger:Error(source: string, code: string, message: string)
+	self:Log(source, "ERROR", code, message)
 end
+
+function Logger:Debug(source: string, code: string, message: string)
+	self:Log(source, "DEBUG", code, message)
+end
+
 return Logger
