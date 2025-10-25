@@ -55,6 +55,178 @@ _Atau bisa juga:_
 
 ## 2.0 LOG TERBARU MULAI DISINI
 
+## [25-10-2025 14:30:00] - [FIXED, HOTFIX, LESSON_LEARNED]
+
+<details>
+<summary>✅ TRAGEDI ROJO MAPPING SOLVED - Over-Specification & Reserved Naming Issue</summary>
+
+**CASE:**
+Setelah refactor security (memisahkan Core ke ServerStorage & ReplicatedStorage dari struktur lama yang semua di ReplicatedStorage), Rojo sync mengalami **silent failure**. Script & LocalScript muncul di Explorer Studio dengan struktur yang benar, tetapi **konten file KOSONG**.
+
+**TIMELINE SINGKAT:**
+
+- **Struktur Lama (OVHL_OJOL):** Semua Core di `ReplicatedStorage`, sync WORK ✅
+- **Refactor V15-V19:** Pisah ke `ServerStorage` & `ReplicatedStorage` untuk security
+- **V20 "Sisyphus":** Ikutin Rojo Docs 100%, struktur di Explorer benar, tapi script KOSONG ❌
+- **Troubleshooting:** Restart Studio, clear cache, cek encoding (UTF-8), cek Rojo version (latest) - semua gagal
+- **Key Info dari Developer:** Struktur lama work, berarti bukan masalah tool (Rojo/Studio)
+
+**PROBLEMATIKA (Root Cause Analysis):**
+
+1. **Over-Specification di `default.project.json`:**
+   ```json
+   // ❌ SALAH (Yang gue coba):
+   "ServerScriptService": {
+     "$className": "ServerScriptService",
+     "init": {
+       "$className": "Script",  // ← Over-specified!
+       "$path": "src/server/init.server.lua"
+     }
+   }
+   ```
+
+````
+
+**Masalah:** Rojo punya auto-detection dari file extension (`.server.lua` → Script, `.client.lua` → LocalScript). Nambah `$className` explicit di child level malah bikin **conflict** atau Rojo bingung.
+
+2.  **Reserved Naming (`init`):** Entry point file bernama `init.server.lua` kemungkinan **conflict** dengan Rojo's internal indexing system (Rojo pake `init.lua` untuk folder indexing).
+
+**SOLUSI FINAL (Yang Work):**
+
+```json
+{
+"name": "OVHL_OS_FIXED",
+"tree": {
+  "$className": "DataModel",
+
+  "ReplicatedStorage": {
+    "$className": "ReplicatedStorage",
+    "$path": "src/replicated"
+  },
+
+  "ServerStorage": {
+    "$className": "ServerStorage",
+    "$path": "src/serverstorage"
+  },
+
+  "ServerScriptService": {
+    "$className": "ServerScriptService",
+    "Main": {
+      "$path": "src/server/Main.server.lua"  // ← TANPA $className!
+    }
+  },
+
+  "StarterPlayer": {
+    "$className": "StarterPlayer",
+    "StarterPlayerScripts": {
+      "$className": "StarterPlayerScripts",
+      "Main": {
+        "$path": "src/client/Main.client.lua"  // ← TANPA $className!
+      }
+    }
+  }
+}
+}
+
+````
+
+**PERUBAHAN KRUSIAL:**
+
+1.  ✅ **Rename entry point:** `init.server.lua` → `Main.server.lua`
+2.  ✅ **Hapus `$className` di child level** - Cukup `$path` + extension yang jelas
+3.  ✅ **Keep `$className` di container level** (`ServerScriptService`, `StarterPlayerScripts`, dll)
+
+**KEY LEARNINGS (Best Practices Rojo Mapping):**
+
+| Level              | Rule                                          | Example                                                            |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------ |
+| **Container**      | ✅ WAJIB `$className`                         | `"ServerScriptService": { "$className": "ServerScriptService" }`   |
+| ---                | ---                                           | ---                                                                |
+| **Script Files**   | ❌ JANGAN `$className` (kalo extension jelas) | `"Main": { "$path": "file.server.lua" }`                           |
+| **ModuleScript**   | ❌ JANGAN `$className`                        | `"Module": { "$path": "Module.lua" }` (`.lua` = auto ModuleScript) |
+| **Custom Objects** | ✅ PERLU `$className`                         | `"Assets": { "$className": "Folder" }`                             |
+| **Naming**         | ⚠️ HINDARI `init`, `index`                    | Pake `Main`, `Bootstrap`, `Startup`                                |
+
+**ROJO AUTO-DETECTION:**
+
+- `.server.lua` → `Script`
+- `.client.lua` → `LocalScript`
+- `.lua` (plain) → `ModuleScript`
+
+**HASIL:**
+
+- ✅ `rojo serve` berjalan tanpa error
+- ✅ Script di Studio **ADA ISI**\-nya (sync berhasil)
+- ✅ Core OS boot sequence jalan
+- ⚠️ Ada error di Output (sedang di-troubleshoot di session berikutnya)
+
+**NOTES/TIPS:**
+
+- **Silent Failure Pattern:** Kalo Rojo serve jalan tapi script kosong → kemungkinan besar over-specification atau naming conflict
+- **Debug Method:** `rojo build -o test.rbxl` lebih reliable untuk test daripada live sync
+- **File Naming:** Hindari nama reserved (`init`, `index`, `default`) untuk entry points
+
+**STRUKTUR FILE FINAL (V20 Fixed):**
+
+```bash
+src/
+├── client/
+│   └── Main.client.lua       (Entry point client)
+├── replicated/
+│   ├── Core/
+│   │   ├── Kernel/
+│   │   │   └── ClientBootstrapper.lua
+│   │   └── Services/
+│   │       ├── InputService.lua
+│   │       └── UIManager.lua
+│   ├── Modules/
+│   │   └── pingpong/
+│   │       ├── manifest.lua
+│   │       └── PingPong.client.lua
+│   └── Shared/
+│       ├── Utils/
+│       │   └── Logger.lua
+│       └── Config.lua
+├── server/
+│   └── Main.server.lua       (Entry point server)
+└── serverstorage/
+    ├── Core/
+    │   ├── Kernel/
+    │   │   └── ServerBootstrapper.lua
+    │   └── Services/
+    │       ├── DataService.lua
+    │       ├── EventService.lua
+    │       ├── ReplicationService.lua
+    │       ├── ServiceManager.lua
+    │       ├── StyleService.lua
+    │       ├── SystemMonitor.lua
+    │       ├── TagService.lua
+    │       └── ZoneService.lua
+    └── Modules/
+        └── pingpong/
+            └── PingPong.server.lua
+```
+
+**STATUS:**
+
+- ✅ Rojo Mapping: SOLVED
+- ✅ Script Sync: WORKING
+- ✅ Core OS: BOOTING
+- 🚧 Output Errors: IN PROGRESS (Next session)
+
+**CREDITS:**
+
+- Troubleshooting: Claude (Anthropic)
+- Final Solution: \[GPT/Gemini - sesuai yang bantu\] + Trial & Error
+
+**IMPACT:**
+
+- ⏱️ Development blocked: ~4-6 jam (V15-V20)
+- 📚 Learning gained: Rojo mapping patterns, auto-detection rules
+- 🔧 Tooling improved: Better understanding of Rojo behavior
+
+</details>
+
 ## [24-10-2025 19:11:00] - [BUG, HOTFIX, DOKS, REFACTOR]
 
 <details>
@@ -327,7 +499,3 @@ Setelah eksekusi `kurir.js` SPRINT 2 (pembuatan Core OS awal), `rojo serve` gaga
 ---
 
 ## **END OF DOCUMENT**
-
-```
-
-```
