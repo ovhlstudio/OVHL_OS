@@ -1,0 +1,23 @@
+--[[
+	═══════════════════════════════════════════════════════════
+	🚀 Konfigurasi Modul yang Digenerate oleh OVHL-Tools
+	═══════════════════════════════════════════════════════════
+	
+	Nama Modul      : Konfigurasi __PASCAL_NAME__
+	Digenerate      : 2025-10-25 06:35:43
+	Generator       : OVHL-Tools v4.0.5
+	Framework       : OVHL RBLX Framework v10
+	Author          : __AUTHOR__
+	
+	═══════════════════════════════════════════════════════════
+--]]
+
+return {
+	-- Aktifkan/nonaktifkan modul ini
+	enabled = true,
+	
+	-- Mode debug (print log tambahan)
+	debugMode = false,
+	
+	-- Tambahkan config kustom Anda di sini
+}
