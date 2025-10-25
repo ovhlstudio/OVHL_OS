@@ -347,4 +347,266 @@ echo "✅ [KURIR MISI] Misi Selesai."
 
 **END OF DOCUMENT**
 
+### 4.4 📋 TEMPLATE REFERENCE untuk kurir.js (WAJIB)
+
+#### 4.4.1 🎯 Placeholder yang Tersedia
+
+Saat menggunakan `getTemplate()` dari `ovhl-tools`, AI **WAJIB** menggunakan placeholder berikut:
+
+| Placeholder             | Tipe   | Deskripsi                                 | Contoh                           |
+| :---------------------- | :----- | :---------------------------------------- | :------------------------------- |
+| `__PASCAL_NAME__`       | String | Nama modul (PascalCase)                   | `"PingPong"`                     |
+| `__DESCRIPTION__`       | String | Deskripsi modul                           | `"Tes komunikasi client-server"` |
+| `__AUTHOR__`            | String | Nama pembuat                              | `"OVHL Developer"`               |
+| `__SIDE__`              | String | Side eksekusi: `"CLIENT"` atau `"SERVER"` | `"SERVER"`                       |
+| `__DEPENDS__`           | String | Lua array dependencies (format string!)   | `'{"EventService", "Logger"}'`   |
+| `__LOGIKA_AI_DI_SINI__` | String | Code logic yang akan diinjeksi            | _(Lihat contoh dibawah)_         |
+| `__GENERATED_DATE__`    | String | ISO timestamp                             | `"2025-10-25T15:00:00"`          |
+| `__VERSION__`           | String | Versi ovhl-tools                          | `"4.0.5"`                        |
+
+#### 4.4.2 📁 Template Files untuk AI
+
+AI **WAJIB** menggunakan template khusus dari folder `ai/`:
+
+| Template             | Kegunaan             | Placeholder Wajib                                      |
+| :------------------- | :------------------- | :----------------------------------------------------- |
+| `ai/manifest-ai.lua` | Untuk `manifest.lua` | `__PASCAL_NAME__`, `__DEPENDS__`, `__SIDE__`           |
+| `ai/handler-ai.lua`  | Untuk handler file   | `__PASCAL_NAME__`, `__LOGIKA_AI_DI_SINI__`, `__SIDE__` |
+| `ai/config-ai.lua`   | Untuk `config.lua`   | `__PASCAL_NAME__`, `__SIDE__`                          |
+| `ai/readme-ai.md`    | Untuk `README.md`    | `__PASCAL_NAME__`, `__DESCRIPTION__`, `__SIDE__`       |
+
+#### 4.4.3 ⚙️ Format `__DEPENDS__` (PENTING!)
+
+Placeholder `__DEPENDS__` harus berupa **string yang berisi Lua array syntax**:
+
+```javascript
+// ✅ CORRECT:
+__DEPENDS__: '{"EventService", "Logger"}';
+
+// ❌ WRONG:
+__DEPENDS__: ["EventService", "Logger"]; // Ini JavaScript array!
+__DEPENDS__: {
+  "EventService", "Logger";
+} // Ini JavaScript object!
+```
+
+**Hasil di Lua:**
+
+```lua
+depends = {"EventService", "Logger"}  -- ✅ Valid Lua
+```
+
+#### 4.4.4 🎨 Format `__LOGIKA_AI_DI_SINI__`
+
+Logika AI harus berupa **string multi-line Lua code** dengan proper indentation:
+
+```javascript
+// ✅ CORRECT:
+const LOGIKA_SERVER = `
+    -- Ambil Logger dari context
+    local logger = self.Logger:new("PingPongHandler_Server")
+    logger:info("Modul PingPong (SERVER) aktif.")
+    
+    -- Subscribe ke event
+    self.EventService:Subscribe("C_TO_S_PING", function(player, pingData)
+        logger:info("Menerima PING dari " .. player.Name)
+        
+        -- Balas ke client
+        self.EventService:PublishToClient(player, "S_TO_C_PONG", { 
+            message = "PONG dari server" 
+        })
+    end)
+`;
+
+// Kemudian inject:
+await getTemplate("ai/handler-ai.lua", {
+  __LOGIKA_AI_DI_SINI__: LOGIKA_SERVER,
+});
+```
+
+**CATATAN INDENTASI:**
+
+- Logika AI di template sudah ter-indent (4 spasi dari kiri)
+- Jadi code di variable `LOGIKA_SERVER` **TIDAK PERLU** indent tambahan
+- Hasil final akan otomatis ter-indent dengan benar
+
+#### 4.4.5 📝 Contoh Lengkap kurir.js (UPDATED)
+
+```javascript
+// ------------------------------------------------
+// 📄 FILE: kurir.js
+// 📍 PATH: ./kurir.js
+// 👨‍💻 AUTHOR: Omniverse Highland Studio
+// 🎯 MISI: Buat modul 'PingPong' (Server & Client)
+// ------------------------------------------------
+
+import path from "path";
+import { logger, getTemplate, ensureDir, writeFile } from "ovhl-tools";
+
+const MISI = "Buat Modul 'PingPong' (Server & Client)";
+const NAMA_MODUL_LOWER = "pingpong";
+const NAMA_MODUL_PASCAL = "PingPong";
+
+// Path V10
+const REPLICATED_PATH_REL = `src/replicated/Modules/${NAMA_MODUL_LOWER}`;
+const SERVER_PATH_REL = `src/serverstorage/Modules/${NAMA_MODUL_LOWER}`;
+const REPLICATED_PATH_ABS = path.resolve(process.cwd(), REPLICATED_PATH_REL);
+const SERVER_PATH_ABS = path.resolve(process.cwd(), SERVER_PATH_REL);
+
+// Logika AI
+const LOGIKA_SERVER = `
+    local logger = self.Logger:new("PingPongHandler_Server")
+    logger:info("Modul PingPong (SERVER) aktif.")
+    
+    self.EventService:Subscribe("C_TO_S_PING", function(player, pingData)
+        logger:info("Menerima PING dari " .. player.Name)
+        
+        self.EventService:PublishToClient(player, "S_TO_C_PONG", { 
+            message = "PONG dari server",
+            timestamp = os.time() 
+        })
+    end)
+`;
+
+const LOGIKA_CLIENT = `
+    local logger = self.Logger:new("PingPongHandler_Client")
+    logger:info("Modul PingPong (CLIENT) aktif.")
+    
+    task.wait(5)
+    logger:info("Mengirim PING ke server...")
+    self.EventService:PublishToServer("C_TO_S_PING", {
+        message = "PING dari client",
+        timestamp = os.time()
+    })
+    
+    self.EventService:Subscribe("S_TO_C_PONG", function(pongData)
+        logger:info("Menerima PONG dari SERVER!")
+    end)
+`;
+
+async function runMission() {
+  logger.info(`🚀 [KURIR] ${MISI}`);
+
+  try {
+    // Fase 1: Buat folder
+    await ensureDir(REPLICATED_PATH_ABS);
+    await ensureDir(SERVER_PATH_ABS);
+    logger.success("Folder siap");
+
+    // Fase 2: CLIENT FILES
+    const manifestClient = await getTemplate("ai/manifest-ai.lua", {
+      __PASCAL_NAME__: NAMA_MODUL_PASCAL,
+      __DESCRIPTION__: "Modul tes komunikasi Client-Server",
+      __AUTHOR__: "OVHL Developer",
+      __SIDE__: "CLIENT",
+      __DEPENDS__: '{"EventService", "Logger"}',
+      __GENERATED_DATE__: new Date().toISOString(),
+      __VERSION__: "4.0.5",
+    });
+    await writeFile(
+      path.join(REPLICATED_PATH_ABS, "manifest.lua"),
+      manifestClient
+    );
+
+    const handlerClient = await getTemplate("ai/handler-ai.lua", {
+      __PASCAL_NAME__: NAMA_MODUL_PASCAL,
+      __DESCRIPTION__: "Handler client PingPong",
+      __AUTHOR__: "OVHL Developer",
+      __SIDE__: "CLIENT",
+      __LOGIKA_AI_DI_SINI__: LOGIKA_CLIENT,
+      __GENERATED_DATE__: new Date().toISOString(),
+      __VERSION__: "4.0.5",
+    });
+    await writeFile(
+      path.join(REPLICATED_PATH_ABS, `${NAMA_MODUL_PASCAL}Handler.lua`),
+      handlerClient
+    );
+
+    // Fase 3: SERVER FILES (sama seperti client, ganti path & logic)
+    const manifestServer = await getTemplate("ai/manifest-ai.lua", {
+      __PASCAL_NAME__: NAMA_MODUL_PASCAL,
+      __DESCRIPTION__: "Modul tes komunikasi Client-Server",
+      __AUTHOR__: "OVHL Developer",
+      __SIDE__: "SERVER",
+      __DEPENDS__: '{"EventService", "Logger"}',
+      __GENERATED_DATE__: new Date().toISOString(),
+      __VERSION__: "4.0.5",
+    });
+    await writeFile(path.join(SERVER_PATH_ABS, "manifest.lua"), manifestServer);
+
+    const handlerServer = await getTemplate("ai/handler-ai.lua", {
+      __PASCAL_NAME__: NAMA_MODUL_PASCAL,
+      __DESCRIPTION__: "Handler server PingPong",
+      __AUTHOR__: "OVHL Developer",
+      __SIDE__: "SERVER",
+      __LOGIKA_AI_DI_SINI__: LOGIKA_SERVER,
+      __GENERATED_DATE__: new Date().toISOString(),
+      __VERSION__: "4.0.5",
+    });
+    await writeFile(
+      path.join(SERVER_PATH_ABS, `${NAMA_MODUL_PASCAL}Handler.lua`),
+      handlerServer
+    );
+
+    logger.success("✅ Misi Selesai!");
+    logger.info(`Client: ${REPLICATED_PATH_REL}`);
+    logger.info(`Server: ${SERVER_PATH_REL}`);
+  } catch (error) {
+    logger.error("❌ Misi GAGAL:", error);
+  }
+}
+
+runMission();
+
+// ------------------------------------------------
+// 🏁 End of: ./kurir.js
+// ------------------------------------------------
+```
+
+#### 4.4.6 ⚠️ Anti-Crash Checklist
+
+AI **WAJIB** memastikan:
+
+- ✅ Gunakan template dari `ai/` folder (bukan template biasa)
+- ✅ `__DEPENDS__` dalam format **string Lua array**
+- ✅ `__LOGIKA_AI_DI_SINI__` sudah ter-indent dengan benar
+- ✅ Semua placeholder wajib diisi (jangan ada yang `undefined`)
+- ✅ `__SIDE__` harus uppercase: `"CLIENT"` atau `"SERVER"`
+
+```bash
+#!/bin/bash
+# ------------------------------------------------
+# 📄 FILE: kurir.sh
+# 📍 PATH: ./kurir.sh
+# 🏛️ STUDIO: (N/A - File tool)
+# 👨‍💻 AUTHOR: Omniverse Highland Studio
+# 🎯 MISI: Buat Modul 'TeleportSystem' (via Dumb CLI).
+# ------------------------------------------------
+
+# AI DILARANG nulis 'echo' atau 'mkdir' di sini.
+# Biarkan tool 'ovhl-tools' yang menangani semua log.
+
+# Panggil tool CLI (asumsi 'ovhl-tools' sudah di-register)
+npx ovhl-tools create module --name teleportsystem --type client-server
+
+# Cek status error terakhir
+if [ $? -ne 0 ]; then
+  # Satu-satunya echo yang diizinkan adalah laporan final
+  echo "❌ [KURIR MISI] Misi GAGAL. Cek log di atas."
+  exit 1
+fi
+
+echo "✅ [KURIR MISI] Misi Selesai."
+
+# ------------------------------------------------
+# 🏁 End of: ./kurir.sh
+# ------------------------------------------------
+```
+
+> "The future is not written. It is built by us." 🚀
+
+---
+
+**END OF DOCUMENT**
+
 ## _Copyright © 2025 - Omniverse Highland Studio_
