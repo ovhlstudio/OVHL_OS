@@ -1,8 +1,8 @@
---!strict
--- [src/replicated/Core/Kernel/ClientBootstrapper.lua] (V16 - Functional Logger)
+
+-- [src/replicated/Core/Kernel/ClientBootstrapper.lua] (V15 Secure + Hotfix)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- PATH: Ambil semua dari ReplicatedStorage
+-- PATH BARU: Ambil semua dari ReplicatedStorage
 local Logger = require(ReplicatedStorage.Shared.Utils.Logger)
 local UIManager = require(ReplicatedStorage.Core.Services.UIManager)
 local InputService = require(ReplicatedStorage.Core.Services.InputService)
@@ -10,39 +10,43 @@ local InputService = require(ReplicatedStorage.Core.Services.InputService)
 local ModulesFolder = ReplicatedStorage.Modules
 
 local ClientBootstrapper = {}
+ClientBootstrapper.__index = ClientBootstrapper
 
-function ClientBootstrapper:Init()
-	Logger:Info("ClientBootstrapper", "INIT_START", "Mulai register services (Client V16)...")
+function ClientBootstrapper:new()
+	local obj = setmetatable({}, ClientBootstrapper)
+	self.logger = Logger:new("ClientBootstrapper")
+	self.instances = { Logger = Logger }
+	return obj
+end
 
-	-- Store instances
-	local instances = { Logger = Logger }
+function ClientBootstrapper:init()
+	self.logger:info("Mulai register services (Client V15)...")
+	
+	self.logger:info("Registering 'UIManager'...")
+	self.instances["UIManager"] = UIManager
 
-	Logger:Info("ClientBootstrapper", "REGISTER", "Registering 'UIManager'...")
-	instances["UIManager"] = UIManager
-
-	Logger:Info("ClientBootstrapper", "REGISTER", "Registering 'InputService'...")
-	instances["InputService"] = InputService
-
-	Logger:Info("ClientBootstrapper", "SERVICE_INIT_START", "Mulai init services...")
-
-	-- Initialize UIManager
+	self.logger:info("Registering 'InputService'...")
+	self.instances["InputService"] = InputService:new()
+	
+	self.logger:info("Mulai init services (Client V15)...")
+	
 	if UIManager.Init then
-		Logger:Info("ClientBootstrapper", "SERVICE_INIT", "Initializing 'UIManager'...")
+		self.logger:info("Initializing 'UIManager'...")
 		UIManager:Init()
 	end
 
-	-- Initialize InputService
-	if InputService.Init then
-		Logger:Info("ClientBootstrapper", "SERVICE_INIT", "Initializing 'InputService'...")
-		InputService:Init(instances)
+	local inputService = self.instances["InputService"]
+	if inputService.init then
+		self.logger:info("Initializing 'InputService'...")
+		inputService:init(self.instances)
 	end
+	
+	self.logger:info("Client services V15 initialized.")
 
-	Logger:Info("ClientBootstrapper", "SERVICE_INIT_COMPLETE", "Client services initialized.")
-
-	Logger:Info("ClientBootstrapper", "MODULE_SCAN_START", "Scanning client modules...")
+	self.logger:info("Scanning client modules...")
 	local modulesLoaded = 0
-
-	-- Scan ReplicatedStorage.Modules
+	
+	-- PATH BARU: Scan ReplicatedStorage.Modules
 	for _, moduleFolder in ipairs(ModulesFolder:GetChildren()) do
 		if moduleFolder:IsA("Folder") then
 			local manifestFile = moduleFolder:FindFirstChild("manifest.lua")
@@ -51,33 +55,16 @@ function ClientBootstrapper:Init()
 				if success and typeof(manifest) == "table" then
 					local clientScriptFile = moduleFolder:FindFirstChild(manifest.client_script)
 					if clientScriptFile and clientScriptFile:IsA("ModuleScript") then
-						Logger:Info(
-							"ClientBootstrapper",
-							"MODULE_LOAD",
-							string.format("Loading client module '%s'...", manifest.name)
-						)
-						local loadSuccess, handler = pcall(require, clientScriptFile)
-						if loadSuccess and handler and handler.Init then
-							pcall(handler.Init, handler, instances) -- Inject context with error handling
-							modulesLoaded = modulesLoaded + 1
-						else
-							Logger:Warn(
-								"ClientBootstrapper",
-								"MODULE_LOAD_FAIL",
-								string.format("Failed to load module '%s'", manifest.name)
-							)
-						end
+						self.logger:info(("Loading client module '%s'..."):format(manifest.name))
+						local handler = require(clientScriptFile)
+						handler:init(self.instances) -- Inject context
+						modulesLoaded = modulesLoaded + 1
 					end
 				end
 			end
 		end
 	end
-
-	Logger:Info(
-		"ClientBootstrapper",
-		"MODULE_SCAN_COMPLETE",
-		string.format("Module scan selesai (%d client modul di-load).", modulesLoaded)
-	)
+	self.logger:info(("Module scan selesai (%d client modul di-load)."):format(modulesLoaded))
 end
 
 return ClientBootstrapper
