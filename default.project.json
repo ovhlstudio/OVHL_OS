@@ -1,10 +1,33 @@
 {
-  "name": "OVHL_OS",
+  "name": "OVHL_OS_FIXED",
   "tree": {
     "$className": "DataModel",
-    "ReplicatedStorage": { "$path": "Source/Core" },
-    "ServerScriptService": { "$path": "Source/Modules/Server" },
-    "StarterPlayer": { "StarterPlayerScripts": { "$path": "Source/Modules/Client" } },
-    "ReplicatedFirst": { "$path": "Source/Modules/Shared" }
+
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "$path": "src/replicated"
+    },
+
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$path": "src/serverstorage"
+    },
+
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Main": {
+        "$path": "src/server/Main.server.lua"
+      }
+    },
+
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Main": {
+          "$path": "src/client/Main.client.lua"
+        }
+      }
+    }
   }
 }
