@@ -1,0 +1,85 @@
+--[[
+	═══════════════════════════════════════════════════════════
+	🚀 Handler Modul yang Digenerate oleh OVHL-Tools
+	═══════════════════════════════════════════════════════════
+	
+	Nama Modul      : __PASCAL_NAME__Handler
+	Digenerate      : 2025-10-25 06:35:43
+	Generator       : OVHL-Tools v4.0.5
+	Framework       : OVHL RBLX Framework v10
+	Author          : __AUTHOR__
+	Tipe            : __MODULE_TYPE__
+	
+	Deskripsi       : __DESCRIPTION__
+	
+	═══════════════════════════════════════════════════════════
+--]]
+
+--// Services
+local RunService = game:GetService("RunService")
+
+--// Definisi Modul
+local __PASCAL_NAME__Handler = {}
+__PASCAL_NAME__Handler.__index = __PASCAL_NAME__Handler
+__PASCAL_NAME__Handler.ClassName = "__PASCAL_NAME__Handler"
+
+--// State Privat
+local _isInitialized = false
+local _context = nil
+local _config = nil
+
+--[[
+	Inisialisasi modul dengan framework context
+	@param context table - Framework context yang berisi Config, EventBus, dll.
+	@return void
+]]
+function __PASCAL_NAME__Handler:init(context)
+	if _isInitialized then 
+		warn("[__PASCAL_NAME__] Sudah diinisialisasi!")
+		return 
+	end
+	
+	assert(context, "[__PASCAL_NAME__] Context diperlukan")
+	
+	_context = context
+	_config = context.Config or {}
+	_isInitialized = true
+	
+	print("[__PASCAL_NAME__] ✓ Berhasil diinisialisasi")
+end
+
+--[[
+	Mulai operasi modul
+	@return void
+]]
+function __PASCAL_NAME__Handler:start()
+	if not _isInitialized then 
+		error("[__PASCAL_NAME__] Harus panggil :init() sebelum :start()")
+	end
+	
+	if _config.debugMode then
+		print("[__PASCAL_NAME__] 🚀 Memulai...")
+	end
+	
+	-- Logika modul Anda di sini
+	
+	print("[__PASCAL_NAME__] ✓ Berjalan")
+end
+
+--[[
+	Cleanup dan hentikan modul
+	@return void
+]]
+function __PASCAL_NAME__Handler:cleanup()
+	if not _isInitialized then return end
+	
+	-- Logika cleanup di sini
+	
+	_isInitialized = false
+	print("[__PASCAL_NAME__] ✓ Dibersihkan")
+end
+
+--// Export tipe untuk autocomplete yang lebih baik
+export type __PASCAL_NAME__Handler = typeof(__PASCAL_NAME__Handler)
+
+return __PASCAL_NAME__Handler
